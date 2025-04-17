@@ -1,0 +1,53 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "D:\\Project\\Tymphany\\Temp\\HandleControl\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{74BB812B-D10D-4BFA-8615-23852ED5ADDF}|HandleControl\\HandleControl.csproj|d:\\project\\tymphany\\temp\\handlecontrol\\handlecontrol\\mainwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{74BB812B-D10D-4BFA-8615-23852ED5ADDF}|HandleControl\\HandleControl.csproj|solutionrelative:handlecontrol\\mainwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{74BB812B-D10D-4BFA-8615-23852ED5ADDF}|HandleControl\\HandleControl.csproj|d:\\project\\tymphany\\temp\\handlecontrol\\handlecontrol\\mainwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "RelativeMoniker": "D:0:0:{74BB812B-D10D-4BFA-8615-23852ED5ADDF}|HandleControl\\HandleControl.csproj|solutionrelative:handlecontrol\\mainwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 1,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "MainWindow.xaml",
+              "DocumentMoniker": "D:\\Project\\Tymphany\\Temp\\HandleControl\\HandleControl\\MainWindow.xaml",
+              "RelativeDocumentMoniker": "HandleControl\\MainWindow.xaml",
+              "ToolTip": "D:\\Project\\Tymphany\\Temp\\HandleControl\\HandleControl\\MainWindow.xaml",
+              "RelativeToolTip": "HandleControl\\MainWindow.xaml",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
+              "WhenOpened": "2025-04-15T01:39:52.213Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "MainWindow.xaml.cs",
+              "DocumentMoniker": "D:\\Project\\Tymphany\\Temp\\HandleControl\\HandleControl\\MainWindow.xaml.cs",
+              "RelativeDocumentMoniker": "HandleControl\\MainWindow.xaml.cs",
+              "ToolTip": "D:\\Project\\Tymphany\\Temp\\HandleControl\\HandleControl\\MainWindow.xaml.cs",
+              "RelativeToolTip": "HandleControl\\MainWindow.xaml.cs",
+              "ViewState": "AgIAALsAAAAAAAAAAAAiwNcAAAAnAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-04-15T01:39:51.11Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
