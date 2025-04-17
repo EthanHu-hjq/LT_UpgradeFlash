@@ -1,0 +1,6 @@
+D:\SoftWare\Microsoft Visual Studio\Project\Tymphany\LT_UpgradeFlash\LT_UpgradeFlash_Lib\bin\Debug\LT_UpgradeFlash_Lib.dll
+D:\SoftWare\Microsoft Visual Studio\Project\Tymphany\LT_UpgradeFlash\LT_UpgradeFlash_Lib\bin\Debug\LT_UpgradeFlash_Lib.pdb
+D:\SoftWare\Microsoft Visual Studio\Project\Tymphany\LT_UpgradeFlash\LT_UpgradeFlash_Lib\obj\Debug\LT_UpgradeFlash_Lib.csproj.AssemblyReference.cache
+D:\SoftWare\Microsoft Visual Studio\Project\Tymphany\LT_UpgradeFlash\LT_UpgradeFlash_Lib\obj\Debug\LT_UpgradeFlash_Lib.csproj.CoreCompileInputs.cache
+D:\SoftWare\Microsoft Visual Studio\Project\Tymphany\LT_UpgradeFlash\LT_UpgradeFlash_Lib\obj\Debug\LT_UpgradeFlash_Lib.dll
+D:\SoftWare\Microsoft Visual Studio\Project\Tymphany\LT_UpgradeFlash\LT_UpgradeFlash_Lib\obj\Debug\LT_UpgradeFlash_Lib.pdb

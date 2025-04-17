@@ -60,9 +60,9 @@ namespace LT_UpgradeFlash_Lib
 
         #region 定义变量
         List<IntPtr> controlHandles = new List<IntPtr>();//存储控件句柄的集合
-        static string rootPath = null;//烧录软件exe路径
         IntPtr mainHandle = IntPtr.Zero; // 主窗口句柄
         static bool isTimeOut = false; // 是否超时标志
+        string burnFilePath = "";//烧录文件路径
         #endregion
 
 
@@ -93,21 +93,8 @@ namespace LT_UpgradeFlash_Lib
         /// <param name="comboBoxHandle">控件句柄</param>
         /// <param name="xmlFilePath">xml文件路径</param>
         /// <param name="defaultSelect">下拉框默认选择</param>
-        private void InitializeChip(IntPtr comboBoxHandle, string xmlFilePath, string defaultSelect)
+        private void InitializeChip(IntPtr comboBoxHandle, string defaultSelect)
         {
-            //加载XML文件
-            XDocument xmlDoc = XDocument.Load(xmlFilePath);
-
-            //遍历所有ChipType节点
-            foreach (var chipType in xmlDoc.Descendants("ChipType"))
-            {
-                string chipName = chipType.Attribute("ChipName")?.Value;
-                if (!string.IsNullOrEmpty(chipName))
-                {
-                    //向ComboBox控件添加字符串
-                    SendMessage(comboBoxHandle, CB_ADDSTRING, IntPtr.Zero, Marshal.StringToHGlobalAuto(chipName));
-                }
-            }
             //默认选中指定的内容
             if (!string.IsNullOrEmpty(defaultSelect))
             {
@@ -153,21 +140,22 @@ namespace LT_UpgradeFlash_Lib
         /// 判断动作是否完成
         /// </summary>
         /// <param name="timeOut">超时设置</param>
-        private void ActionIsDone(int timeOut)
+        private bool ActionIsDone(out string logStr, int timeOut)
         {
             //判断动作是否完成，如果反复调用ReadLog()返回的字符串的长度大于2或时间达到timeOut则表示完成
             int count = 0;
             while (true)
             {
-                string log = ReadLog();
-                if (log.Length > 3 || count >= timeOut*1000)
+                logStr = ReadLog();
+                if (logStr.Length > 3 || count >= timeOut*1000)
                 {
                     isTimeOut = true;
-                    break;
+                    return true;
                 }
                 Thread.Sleep(100);
                 count += 100;
             }
+            return false;
         }
 
         #endregion
@@ -181,13 +169,12 @@ namespace LT_UpgradeFlash_Lib
         /// </summary>
         /// <param name="exePath">exe路径</param>
         /// <param name="waitForOpenDone">等待exe打开完成时间</param>
-        public void OpenUpgradeFlash(string exePath, int waitForOpenDone,string chipXmlFilePath,string chipSelection)
+        public void OpenUpgradeFlash(string exePath, int waitForOpenDone,string chipSelection)
         {
-            rootPath = exePath;
             //启动烧录软件exe
             Process process = new Process();
-            process.StartInfo.FileName = rootPath;
-            process.StartInfo.WorkingDirectory = System.IO.Path.GetDirectoryName(rootPath);//设置工作目录
+            process.StartInfo.FileName = exePath;
+            process.StartInfo.WorkingDirectory = System.IO.Path.GetDirectoryName(exePath);//设置工作目录
             process.StartInfo.UseShellExecute = true;
             process.Start();
 
@@ -209,7 +196,7 @@ namespace LT_UpgradeFlash_Lib
 
             //初始化Chip控件
             IntPtr comboBoxHandle = FindWindowEx(mainHandle, IntPtr.Zero, "ComboBox", null);
-            InitializeChip(comboBoxHandle, chipXmlFilePath, chipSelection);//加载XML并初始化ComboBox控件Chip
+            InitializeChip(comboBoxHandle,  chipSelection);//加载XML并初始化ComboBox控件Chip
         }
         #endregion
 
@@ -241,16 +228,23 @@ namespace LT_UpgradeFlash_Lib
         /// <param name="burnFilePath">烧录文件</param>
         /// <param name="waitForDone">烧录完成等待时间</param>
         /// <returns></returns>
-        public bool Prog(string burnFilePath, int timeOut=3000)
+        public bool Prog(out string resultStr, int timeOut=3000)
         {
-            ClearLog();//清除Log记录
-            IntPtr progHandle = SetControlHandles(1001);//获取烧录按钮句柄
-            ClickButton(progHandle);//模拟点击烧录按钮
-            ActionIsDone(timeOut);//判断烧录是否完成
-            string resultStr = ReadLog();//读取烧录结果
-            //判断烧录结果是否成功的正则表达式
-            string pattern = @".*Prog Flash Data.*Succeed.*";
-            return Regex.IsMatch(resultStr, pattern);
+            try
+            {
+                ClearLog();//清除Log记录
+                IntPtr progHandle = SetControlHandles(1001);//获取烧录按钮句柄
+                ClickButton(progHandle);//模拟点击烧录按钮
+                resultStr = "";
+                ActionIsDone(out resultStr, timeOut);//判断烧录是否完成
+                string pattern = @".*Program Flash Data.*Succeed.*";
+                return Regex.IsMatch(resultStr, pattern);
+            }
+            catch(Exception ex)
+            {
+                resultStr = "";
+                return false;
+            }
         }
         #endregion
 
@@ -260,7 +254,7 @@ namespace LT_UpgradeFlash_Lib
             ClearLog();//清除Log记录
             IntPtr readHandle = SetControlHandles(1002);//获取读取按钮句柄
             ClickButton(readHandle);//模拟点击读取按钮
-            ActionIsDone(timeOut);//判断读取是否完成
+            ActionIsDone(out resultStr, timeOut);//判断读取是否完成
             resultStr = ReadLog();//读取烧录结果
             //判断烧录结果是否成功的正则表达式
             string pattern = @".*Read Flash Data.*Succeed.*";
@@ -274,7 +268,7 @@ namespace LT_UpgradeFlash_Lib
             ClearLog();//清除Log记录
             IntPtr eraseHandle = SetControlHandles(1021);//获取擦除按钮句柄
             ClickButton(eraseHandle);//模拟点击擦除按钮
-            ActionIsDone(timeOut);//判断擦除是否完成
+            ActionIsDone(out resultStr, timeOut);//判断擦除是否完成
             resultStr = ReadLog();//读取烧录结果
 
             //判断烧录结果是否成功的正则表达式
@@ -321,18 +315,30 @@ namespace LT_UpgradeFlash_Lib
         #region 读取Log记录
         public string ReadLog()
         {
-            IntPtr logHandle = SetControlHandles(1010);//获取结果显示控件句柄
-            StringBuilder logContent = null;
-            int logLength = SendMessage(logHandle, WM_GETTEXTLENGTH, 0, logContent);
-            if (logLength > 0)
+            foreach (var handle in controlHandles)
             {
-                //创建一个StringBuilder对象来存储文本内容
-                logContent = new StringBuilder(logLength + 1);
-                //获取文本内容
-                SendMessage(logHandle, WM_GETTEXT, logLength + 1, logContent);
-                return logContent.ToString();
+                int controlID = GetDlgCtrlID(handle); // 获取控件ID
+                if (controlID == 1010)
+                {
+                    StringBuilder sb = null;
+                    // 获取文本框内容的长度
+                    int textLength = SendMessage(handle, WM_GETTEXTLENGTH, 0, sb);
+                    if (textLength > 0)
+                    {
+                        // 创建一个StringBuilder对象来存储文本内容
+                        StringBuilder textContent = new StringBuilder(textLength + 1);
+                        // 获取文本框内容
+                        SendMessage(handle, WM_GETTEXT, textLength + 1, textContent);
+                        // 将文本内容显示在UI的TextBlock上
+                        return textContent.ToString();
+                    }
+                    else
+                    {
+                        return "";
+                    }
+                }
             }
-            return null;
+            return "";
         }
         #endregion
 
@@ -340,10 +346,11 @@ namespace LT_UpgradeFlash_Lib
         public void CloseUpgradeFlash()
         {
             //关闭烧录软件exe
-            Process[] processes = Process.GetProcessesByName(System.IO.Path.GetFileNameWithoutExtension(rootPath));
+            Process[] processes = Process.GetProcessesByName("Upgrade_Flash_For_Application");
             foreach (Process process in processes)
             {
                 process.Kill();
+                process.WaitForExit();
             }
         }
         #endregion

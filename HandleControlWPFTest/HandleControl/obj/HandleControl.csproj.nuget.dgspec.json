@@ -1,23 +1,23 @@
 {
   "format": 1,
   "restore": {
-    "D:\\Project\\Tymphany\\LT_UpgradeFlash\\HandleControlWPFTest\\HandleControl\\HandleControl.csproj": {}
+    "D:\\SoftWare\\Microsoft Visual Studio\\Project\\Tymphany\\LT_UpgradeFlash\\HandleControlWPFTest\\HandleControl\\HandleControl.csproj": {}
   },
   "projects": {
-    "D:\\Project\\Tymphany\\LT_UpgradeFlash\\HandleControlWPFTest\\HandleControl\\HandleControl.csproj": {
+    "D:\\SoftWare\\Microsoft Visual Studio\\Project\\Tymphany\\LT_UpgradeFlash\\HandleControlWPFTest\\HandleControl\\HandleControl.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\Project\\Tymphany\\LT_UpgradeFlash\\HandleControlWPFTest\\HandleControl\\HandleControl.csproj",
+        "projectUniqueName": "D:\\SoftWare\\Microsoft Visual Studio\\Project\\Tymphany\\LT_UpgradeFlash\\HandleControlWPFTest\\HandleControl\\HandleControl.csproj",
         "projectName": "HandleControl",
-        "projectPath": "D:\\Project\\Tymphany\\LT_UpgradeFlash\\HandleControlWPFTest\\HandleControl\\HandleControl.csproj",
-        "packagesPath": "C:\\Users\\ethan.hu\\.nuget\\packages\\",
-        "outputPath": "D:\\Project\\Tymphany\\LT_UpgradeFlash\\HandleControlWPFTest\\HandleControl\\obj\\",
+        "projectPath": "D:\\SoftWare\\Microsoft Visual Studio\\Project\\Tymphany\\LT_UpgradeFlash\\HandleControlWPFTest\\HandleControl\\HandleControl.csproj",
+        "packagesPath": "C:\\Users\\37463\\.nuget\\packages\\",
+        "outputPath": "D:\\SoftWare\\Microsoft Visual Studio\\Project\\Tymphany\\LT_UpgradeFlash\\HandleControlWPFTest\\HandleControl\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
-          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+          "D:\\SoftWare\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\ethan.hu\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\37463\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],

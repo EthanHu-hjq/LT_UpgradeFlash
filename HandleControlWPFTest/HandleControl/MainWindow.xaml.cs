@@ -14,6 +14,7 @@ using System.Xml.Linq;
 using System.Reflection.Metadata;
 using System.Text.RegularExpressions;
 using System.Runtime.CompilerServices;
+using System.Threading;
 
 namespace HandleControl
 {
@@ -80,7 +81,7 @@ namespace HandleControl
         }
 
         //定义exe路径1
-        static string rootPath =@"D:\Project\Tymphany\HDMI Board_2025-04-15\HDMI Board\LT Upgrade Flash\Upgrade_Flash_For_Application.exe";
+        static string rootPath = @"D:\SoftWare\Microsoft Visual Studio\Project\Tymphany\LT_UpgradeFlash\HDMI Board\LT Upgrade Flash\Upgrade_Flash_For_Application.exe";
         public MainWindow()
         {
             InitializeComponent();
@@ -217,7 +218,7 @@ namespace HandleControl
             //设置Chip控件的XML文件路径
             string xmlFilePath = @"D:\Project\Tymphany\HDMI Board_2025-04-15\HDMI Board\LT Upgrade Flash\UpgradeFlash.xml";
             string defaultSelection = "LT6911(UX/UXB/UXC)";
-            InitializeComboBox(comboBoxHandle, xmlFilePath, defaultSelection); // 初始化ComboBox控件
+            //InitializeComboBox(comboBoxHandle, xmlFilePath, defaultSelection); // 初始化ComboBox控件
 
         }
 
@@ -422,7 +423,7 @@ namespace HandleControl
         private void Button_Click_4(object sender, RoutedEventArgs e)
         {
             IntPtr comboBoxHandle = FindWindowEx(mainHnadle, IntPtr.Zero, "ComboBox", null);
-            SendMessage(comboBoxHandle, CB_SELECTSTRING, IntPtr.Zero, Marshal.StringToHGlobalAuto("LT86102UXE/LT8612UX"));
+            SendMessage(comboBoxHandle, CB_SELECTSTRING, IntPtr.Zero, Marshal.StringToHGlobalAuto(this.chip.Text));
             //foreach (var handle in controlHandles)
             //{
             //    StringBuilder className = new StringBuilder(256);
@@ -451,6 +452,70 @@ namespace HandleControl
             return Regex.IsMatch(compareStr, pattern);
         }
 
+        bool isTimeOut = false;
+        private bool ActionIsDone(int timeOut)
+        {
+            //判断动作是否完成，如果反复调用ReadLog()返回的字符串的长度大于2或时间达到timeOut则表示完成
+            int count = 0;
+            while (true)
+            {
+                string log = ReadLog();
+                if (log.Length > 3 || count >= timeOut * 1000)
+                {
+                    isTimeOut = true;
+                    return true;
+                }
+                Thread.Sleep(100);
+                count += 100;
+            }
+            return false;
+        }
+        public string ReadLog()
+        {
+            foreach (var handle in controlHandles)
+            {
+                int controlID = GetDlgCtrlID(handle); // 获取控件ID
+                if (controlID == 1010)
+                {
+                    StringBuilder sb = null;
+                    // 获取文本框内容的长度
+                    int textLength = SendMessage(handle, WM_GETTEXTLENGTH, 0, sb);
+                    if (textLength > 0)
+                    {
+                        // 创建一个StringBuilder对象来存储文本内容
+                        StringBuilder textContent = new StringBuilder(textLength + 1);
+                        // 获取文本框内容
+                        SendMessage(handle, WM_GETTEXT, textLength + 1, textContent);
+                        // 将文本内容显示在UI的TextBlock上
+                        this.Log.Text = textContent.ToString();
+                        return textContent.ToString();
+                    }
+                    else
+                    {
+                        this.Log.Text = "TextBox is empty.";
+                    }
+                }
+            }
+            return null;
+        }
+        /// <summary>
+        /// 获取控件handle
+        /// </summary>
+        /// <param name="CompareCtrlId">指定控件ID</param>
+        /// <returns></returns>
+        private IntPtr SetControlHandles(int CompareCtrlId)
+        {
+            foreach (var handle in controlHandles)
+            {
+                int ctrlId = GetDlgCtrlID(handle);//获取控件ID
+                if (ctrlId == CompareCtrlId) //判断控件是否为烧录按钮
+                {
+                    return handle;
+                    break;
+                }
+            }
+            return IntPtr.Zero;
+        }
         private void Button_Click_5(object sender, RoutedEventArgs e)
         {
             ClearLog();   
@@ -461,7 +526,7 @@ namespace HandleControl
                 if (controlID == 1001)
                 {
                     ClickButton(handle); // 模拟点击Prog按钮
-
+                    ActionIsDone(4); // 判断动作是否完成，如果反复调用ReadLog()返回的字符串的长度大于2或时间达到4秒则表示完成
                     break;
                 }
             }

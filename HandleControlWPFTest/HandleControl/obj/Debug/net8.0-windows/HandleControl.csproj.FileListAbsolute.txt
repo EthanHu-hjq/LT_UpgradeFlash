@@ -39,3 +39,24 @@ D:\Project\Tymphany\LT_UpgradeFlash\HandleControlWPFTest\HandleControl\obj\Debug
 D:\Project\Tymphany\LT_UpgradeFlash\HandleControlWPFTest\HandleControl\obj\Debug\net8.0-windows\HandleControl.pdb
 D:\Project\Tymphany\LT_UpgradeFlash\HandleControlWPFTest\HandleControl\obj\Debug\net8.0-windows\HandleControl.genruntimeconfig.cache
 D:\Project\Tymphany\LT_UpgradeFlash\HandleControlWPFTest\HandleControl\obj\Debug\net8.0-windows\ref\HandleControl.dll
+D:\SoftWare\Microsoft Visual Studio\Project\Tymphany\LT_UpgradeFlash\HandleControlWPFTest\HandleControl\bin\Debug\net8.0-windows\HandleControl.exe
+D:\SoftWare\Microsoft Visual Studio\Project\Tymphany\LT_UpgradeFlash\HandleControlWPFTest\HandleControl\bin\Debug\net8.0-windows\HandleControl.deps.json
+D:\SoftWare\Microsoft Visual Studio\Project\Tymphany\LT_UpgradeFlash\HandleControlWPFTest\HandleControl\bin\Debug\net8.0-windows\HandleControl.runtimeconfig.json
+D:\SoftWare\Microsoft Visual Studio\Project\Tymphany\LT_UpgradeFlash\HandleControlWPFTest\HandleControl\bin\Debug\net8.0-windows\HandleControl.dll
+D:\SoftWare\Microsoft Visual Studio\Project\Tymphany\LT_UpgradeFlash\HandleControlWPFTest\HandleControl\bin\Debug\net8.0-windows\HandleControl.pdb
+D:\SoftWare\Microsoft Visual Studio\Project\Tymphany\LT_UpgradeFlash\HandleControlWPFTest\HandleControl\obj\Debug\net8.0-windows\MainWindow.g.cs
+D:\SoftWare\Microsoft Visual Studio\Project\Tymphany\LT_UpgradeFlash\HandleControlWPFTest\HandleControl\obj\Debug\net8.0-windows\App.g.cs
+D:\SoftWare\Microsoft Visual Studio\Project\Tymphany\LT_UpgradeFlash\HandleControlWPFTest\HandleControl\obj\Debug\net8.0-windows\HandleControl_MarkupCompile.cache
+D:\SoftWare\Microsoft Visual Studio\Project\Tymphany\LT_UpgradeFlash\HandleControlWPFTest\HandleControl\obj\Debug\net8.0-windows\HandleControl_MarkupCompile.lref
+D:\SoftWare\Microsoft Visual Studio\Project\Tymphany\LT_UpgradeFlash\HandleControlWPFTest\HandleControl\obj\Debug\net8.0-windows\MainWindow.baml
+D:\SoftWare\Microsoft Visual Studio\Project\Tymphany\LT_UpgradeFlash\HandleControlWPFTest\HandleControl\obj\Debug\net8.0-windows\HandleControl.g.resources
+D:\SoftWare\Microsoft Visual Studio\Project\Tymphany\LT_UpgradeFlash\HandleControlWPFTest\HandleControl\obj\Debug\net8.0-windows\HandleControl.GeneratedMSBuildEditorConfig.editorconfig
+D:\SoftWare\Microsoft Visual Studio\Project\Tymphany\LT_UpgradeFlash\HandleControlWPFTest\HandleControl\obj\Debug\net8.0-windows\HandleControl.AssemblyInfoInputs.cache
+D:\SoftWare\Microsoft Visual Studio\Project\Tymphany\LT_UpgradeFlash\HandleControlWPFTest\HandleControl\obj\Debug\net8.0-windows\HandleControl.AssemblyInfo.cs
+D:\SoftWare\Microsoft Visual Studio\Project\Tymphany\LT_UpgradeFlash\HandleControlWPFTest\HandleControl\obj\Debug\net8.0-windows\HandleControl.csproj.CoreCompileInputs.cache
+D:\SoftWare\Microsoft Visual Studio\Project\Tymphany\LT_UpgradeFlash\HandleControlWPFTest\HandleControl\obj\Debug\net8.0-windows\HandleControl.sourcelink.json
+D:\SoftWare\Microsoft Visual Studio\Project\Tymphany\LT_UpgradeFlash\HandleControlWPFTest\HandleControl\obj\Debug\net8.0-windows\HandleControl.dll
+D:\SoftWare\Microsoft Visual Studio\Project\Tymphany\LT_UpgradeFlash\HandleControlWPFTest\HandleControl\obj\Debug\net8.0-windows\refint\HandleControl.dll
+D:\SoftWare\Microsoft Visual Studio\Project\Tymphany\LT_UpgradeFlash\HandleControlWPFTest\HandleControl\obj\Debug\net8.0-windows\HandleControl.pdb
+D:\SoftWare\Microsoft Visual Studio\Project\Tymphany\LT_UpgradeFlash\HandleControlWPFTest\HandleControl\obj\Debug\net8.0-windows\HandleControl.genruntimeconfig.cache
+D:\SoftWare\Microsoft Visual Studio\Project\Tymphany\LT_UpgradeFlash\HandleControlWPFTest\HandleControl\obj\Debug\net8.0-windows\ref\HandleControl.dll
