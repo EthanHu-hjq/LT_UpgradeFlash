@@ -3,8 +3,10 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml.Linq;
@@ -59,10 +61,11 @@ namespace LT_UpgradeFlash_Lib
         #region 定义变量
         List<IntPtr> controlHandles = new List<IntPtr>();//存储控件句柄的集合
         static string rootPath = null;//烧录软件exe路径
-        IntPtr mainHnadle = IntPtr.Zero; // 主窗口句柄
+        IntPtr mainHandle = IntPtr.Zero; // 主窗口句柄
+        static bool isTimeOut = false; // 是否超时标志
         #endregion
 
-        
+
         #region 声明子方法
         /// <summary>
         /// 枚举控件句柄
@@ -113,6 +116,60 @@ namespace LT_UpgradeFlash_Lib
             }
         }
 
+        /// <summary>
+        /// 获取控件handle
+        /// </summary>
+        /// <param name="CompareCtrlId">指定控件ID</param>
+        /// <returns></returns>
+        private IntPtr SetControlHandles(int CompareCtrlId)
+        {
+            foreach (var handle in controlHandles)
+            {
+                int ctrlId = GetDlgCtrlID(handle);//获取控件ID
+                if (ctrlId == CompareCtrlId) //判断控件是否为烧录按钮
+                {
+                    return handle;
+                    break;
+                }
+            }
+            return IntPtr.Zero;
+        }
+
+        /// <summary>
+        /// 清除Log记录
+        /// </summary>
+        /// <returns>如果Log内容长度小于2则返回true</returns>
+        private bool ClearLog()
+        {
+            IntPtr clearBtnHandle = SetControlHandles(1014);//获取清除按钮控件句柄
+            ClickButton(clearBtnHandle);//模拟点击清除按钮
+            Thread.Sleep(100);//等待清除完成
+            string log = ReadLog();//读取Log记录
+            if (log.Length < 2) return true;
+            return false;
+        }
+
+        /// <summary>
+        /// 判断动作是否完成
+        /// </summary>
+        /// <param name="timeOut">超时设置</param>
+        private void ActionIsDone(int timeOut)
+        {
+            //判断动作是否完成，如果反复调用ReadLog()返回的字符串的长度大于2或时间达到timeOut则表示完成
+            int count = 0;
+            while (true)
+            {
+                string log = ReadLog();
+                if (log.Length > 3 || count >= timeOut*1000)
+                {
+                    isTimeOut = true;
+                    break;
+                }
+                Thread.Sleep(100);
+                count += 100;
+            }
+        }
+
         #endregion
 
 
@@ -124,7 +181,7 @@ namespace LT_UpgradeFlash_Lib
         /// </summary>
         /// <param name="exePath">exe路径</param>
         /// <param name="waitForOpenDone">等待exe打开完成时间</param>
-        public void OpenUpgradeFlash(string exePath, int waitForOpenDone,string xmlFilePath,string chipSelection)
+        public void OpenUpgradeFlash(string exePath, int waitForOpenDone,string chipXmlFilePath,string chipSelection)
         {
             rootPath = exePath;
             //启动烧录软件exe
@@ -139,30 +196,41 @@ namespace LT_UpgradeFlash_Lib
             process.WaitForInputIdle(); // 等待进程进入空闲状态
 
             //获取主窗口句柄
-            mainHnadle = process.MainWindowHandle;
+            mainHandle = process.MainWindowHandle;
             //如果主窗口句柄为空，则等待一段时间再次获取
-            if(mainHnadle == IntPtr.Zero)
+            if(mainHandle == IntPtr.Zero)
             {
                 Thread.Sleep(1000);
-                mainHnadle = process.MainWindowHandle;
+                mainHandle = process.MainWindowHandle;
             }
 
             //获取所有子控件句柄
-            EnumChildWindows(mainHnadle,EnumChildCallback, IntPtr.Zero);
+            EnumChildWindows(mainHandle,EnumChildCallback, IntPtr.Zero);
 
             //初始化Chip控件
-            IntPtr comboBoxHandle = FindWindowEx(mainHnadle, IntPtr.Zero, "ComboBox", null);
-            InitializeChip(comboBoxHandle, xmlFilePath, chipSelection);//加载XML并初始化ComboBox控件Chip
+            IntPtr comboBoxHandle = FindWindowEx(mainHandle, IntPtr.Zero, "ComboBox", null);
+            InitializeChip(comboBoxHandle, chipXmlFilePath, chipSelection);//加载XML并初始化ComboBox控件Chip
         }
         #endregion
 
-        
-
         #region 选择芯片型号
-        public void SelectChip(string chipName)
+        public bool SelectChip(string chipName)
         {
-            IntPtr comboBoxHandle = FindWindowEx(mainHnadle, IntPtr.Zero, "ComboBox", null);
+            IntPtr comboBoxHandle = FindWindowEx(mainHandle, IntPtr.Zero, "ComboBox", null);
             SendMessage(comboBoxHandle, CB_SELECTSTRING, IntPtr.Zero, Marshal.StringToHGlobalAuto(chipName));
+            StringBuilder chipContent = null;
+            int comboBoxContentLength = SendMessage(comboBoxHandle, WM_GETTEXTLENGTH, 0, chipContent);
+            if(comboBoxContentLength > 0)
+            {
+                chipContent = new StringBuilder(comboBoxContentLength + 1);
+                //获取文本内容
+                SendMessage(comboBoxHandle, WM_GETTEXT, comboBoxContentLength + 1, chipContent);
+                if (chipContent.ToString() == chipName)
+                {
+                    return true;//判断是否设置成功
+                }
+            }
+            return false;
         }
         #endregion
 
@@ -170,64 +238,101 @@ namespace LT_UpgradeFlash_Lib
         /// <summary>
         /// 烧录方法
         /// </summary>
-        /// <param name="hexFilePath">烧录文件</param>
-        public string Prog(string hexFilePath,int waitForDone)
+        /// <param name="burnFilePath">烧录文件</param>
+        /// <param name="waitForDone">烧录完成等待时间</param>
+        /// <returns></returns>
+        public bool Prog(string burnFilePath, int timeOut=3000)
         {
-            foreach(var handle in controlHandles)
-            {
-                int ctrlId = GetDlgCtrlID(handle);//获取控件ID
-                if(ctrlId == 1004) //判断控件是否为加载HEX文件的控件
-                {
-                    SendMessage(handle, WM_SETTEXT, 0, hexFilePath);//设置HEX文件路径
-                }
-                if(ctrlId == 1001)//判断控件是否为烧录按钮
-                {
-                    //设置焦点
-                    //SetForegroundWindow(handle);
-                    //SetFocus(handle);
-                    //模拟点击
-                    ClickButton(handle);
-                    break;
-                }
-            }
-            //等待烧录完成
-            Thread.Sleep(waitForDone);//等待烧录完成
-            string result = ReadLog();//读取烧录结果
-
-
-            return "";
+            ClearLog();//清除Log记录
+            IntPtr progHandle = SetControlHandles(1001);//获取烧录按钮句柄
+            ClickButton(progHandle);//模拟点击烧录按钮
+            ActionIsDone(timeOut);//判断烧录是否完成
+            string resultStr = ReadLog();//读取烧录结果
+            //判断烧录结果是否成功的正则表达式
+            string pattern = @".*Prog Flash Data.*Succeed.*";
+            return Regex.IsMatch(resultStr, pattern);
         }
         #endregion
 
-        #region 读取烧录结果
-        
+        #region 读取按钮事件
+        public bool Read(out string resultStr,int timeOut=3000)
+        {
+            ClearLog();//清除Log记录
+            IntPtr readHandle = SetControlHandles(1002);//获取读取按钮句柄
+            ClickButton(readHandle);//模拟点击读取按钮
+            ActionIsDone(timeOut);//判断读取是否完成
+            resultStr = ReadLog();//读取烧录结果
+            //判断烧录结果是否成功的正则表达式
+            string pattern = @".*Read Flash Data.*Succeed.*";
+            return Regex.IsMatch(resultStr, pattern);
+        }
         #endregion
 
-
-        #region 读取Log记录
-        public string ReadLog()
+        #region 擦除按钮事件
+        public void Erase(out string resultStr,int timeOut = 3000)
         {
-            StringBuilder result = new StringBuilder(256);
+            ClearLog();//清除Log记录
+            IntPtr eraseHandle = SetControlHandles(1021);//获取擦除按钮句柄
+            ClickButton(eraseHandle);//模拟点击擦除按钮
+            ActionIsDone(timeOut);//判断擦除是否完成
+            resultStr = ReadLog();//读取烧录结果
+
+            //判断烧录结果是否成功的正则表达式
+            //string pattern = @".*Erase Flash Data.*Succeed.*";
+            //return Regex.IsMatch(resultStr, pattern);
+        }
+        #endregion
+
+        #region 设置烧录文件
+        public bool SetBurnFile(string burnFilePath)
+        {
             foreach (var handle in controlHandles)
             {
                 int ctrlId = GetDlgCtrlID(handle);//获取控件ID
-                if (ctrlId == 1010) //判断控件是否为结果显示控件
+                if (ctrlId == 1004) //判断控件是否为加载HEX文件的控件
                 {
-                    StringBuilder textContent = null;
-                    //获取文本长度
-                    int length = SendMessage(handle, WM_GETTEXTLENGTH, 0, textContent);
-                    if(length > 0)
+                    SendMessage(handle, WM_SETTEXT, 0, burnFilePath);//设置HEX文件路径
+                    Thread.Sleep(100);//等待设置完成
+                    StringBuilder sb = null;
+                    // 获取文本框内容的长度
+                    int textLength = SendMessage(handle, WM_GETTEXTLENGTH, 0, sb);
+                    if (textLength > 0)
                     {
-                        //获取文本内容
-                        textContent = new StringBuilder(length + 1);
-                        //获取文本内容
-                        SendMessage(handle, WM_GETTEXT, textContent.Capacity, textContent);
-                        result.Append(textContent.ToString());
+                        // 创建一个StringBuilder对象来存储文本内容
+                        StringBuilder textContent = new StringBuilder(textLength + 1);
+                        // 获取文本框内容
+                        SendMessage(handle, WM_GETTEXT, textLength + 1, textContent);
+                        if(textContent.ToString() == burnFilePath)return true;//判断是否设置成功
                     }
                     break;
                 }
             }
-            return result.ToString();
+            return false;
+        }
+        #endregion
+
+        #region 清除Log记录
+        public bool ClearLogRecord()
+        {
+            return ClearLog();
+        }
+        #endregion
+
+        #region 读取Log记录
+        public string ReadLog()
+        {
+            IntPtr logHandle = SetControlHandles(1010);//获取结果显示控件句柄
+            StringBuilder logContent = null;
+            int logLength = SendMessage(logHandle, WM_GETTEXTLENGTH, 0, logContent);
+            if (logLength > 0)
+            {
+                //创建一个StringBuilder对象来存储文本内容
+                logContent = new StringBuilder(logLength + 1);
+                //获取文本内容
+                SendMessage(logHandle, WM_GETTEXT, logLength + 1, logContent);
+                return logContent.ToString();
+            }
+            return null;
         }
         #endregion
 

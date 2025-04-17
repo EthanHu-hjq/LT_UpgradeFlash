@@ -12,6 +12,8 @@ using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Xml.Linq;
 using System.Reflection.Metadata;
+using System.Text.RegularExpressions;
+using System.Runtime.CompilerServices;
 
 namespace HandleControl
 {
@@ -100,7 +102,8 @@ namespace HandleControl
         //通过句柄想按钮发送BM_CLICK消息来模拟按钮点击1
         public void ClickButton(IntPtr hwnd)
         {
-            PostMessage(hwnd, BM_CLICK, IntPtr.Zero, IntPtr.Zero);
+            SendMessage(hwnd, BM_CLICK, IntPtr.Zero, IntPtr.Zero); // 阻塞模拟按钮点击
+            //PostMessage(hwnd, BM_CLICK, IntPtr.Zero, IntPtr.Zero);//不阻塞模拟按钮点击
         }
         #endregion
 
@@ -326,47 +329,53 @@ namespace HandleControl
                 int controlID = GetDlgCtrlID(handle); // 获取控件ID
                 if (controlID == 1004)
                 {
-                    //FocusOnControl(mainHnadle, handle);
                     //SetWindowText(handle, "00001"); // 设置控件标题
                     bool isEnabled = IsWindowEnabled(handle) != 0;
                     if (!isEnabled)
                     {
                         MessageBox.Show("控件未启用！");
+                        break;
                     }
                     else
                     {
-                        //SetWindowText(handle, @"D:\Project\Tymphany\HDMI Board_2025-04-15\HDMI Board\LT Upgrade Flash\text.hex");
                         SendMessage(handle,WM_SETTEXT,0, @"D:\Project\Tymphany\HDMI Board_2025-04-15\HDMI Board\LT Upgrade Flash\text.hex");
+                        StringBuilder sb = null;
+                        // 获取文本框内容的长度
+                        int textLength = SendMessage(handle, WM_GETTEXTLENGTH, 0, sb);
+                        if (textLength > 0)
+                        {
+                            // 创建一个StringBuilder对象来存储文本内容
+                            StringBuilder textContent = new StringBuilder(textLength + 1);
+                            // 获取文本框内容
+                            SendMessage(handle, WM_GETTEXT, textLength + 1, textContent);
+                            MessageBox.Show(textContent.ToString());
+                        }
+                        break;
                     }
-                    //const int maxLength = 256;
-                    //StringBuilder caption = new StringBuilder(maxLength);
-                    //int lenghth = GetWindowText(handle, caption, maxLength); // 获取控件标题
-                    
                 }
-                //StringBuilder className = new StringBuilder(256);
-                //GetClassName(handle, className, className.Capacity); // 获取类名
+            }
+        }
 
-                //string handleStr = handle.ToString("X");
-                //string controlType = className.ToString(); // 获取控件类型
-
-                //#region 获取控件caption
-                //const int maxLength = 256;
-                //StringBuilder caption = new StringBuilder(maxLength);
-                //int lenghth = GetWindowText(handle, caption, maxLength); // 获取控件标题
-                //#endregion
-
-                //if (caption.ToString() == "Prog")
-                //{
-                //    ClickButton(handle); // 模拟点击
-
-                //    // 启动新线程处理文件选择弹框
-                //    // 启动新线程处理文件选择框
-                //    Task.Run(() =>
-                //    {
-                //        string defaultFilePath = @"D:\Project\Tymphany\HDMI Board_2025-04-15\HDMI Board\LT Upgrade Flash\text.hex";
-                //        HandleFileDialog(defaultFilePath);
-                //    });
-                //}
+        /// <summary>
+        /// 读取Log控件的内容
+        /// </summary>
+        private string ReadLogContent(IntPtr logHandle)
+        {
+            StringBuilder sb = null;
+            // 获取文本框内容的长度
+            int textLength = SendMessage(logHandle, WM_GETTEXTLENGTH, 0, sb);
+            if (textLength > 0)
+            {
+                // 创建一个StringBuilder对象来存储文本内容
+                StringBuilder textContent = new StringBuilder(textLength + 1);
+                // 获取文本框内容
+                SendMessage(logHandle, WM_GETTEXT, textLength + 1, textContent);
+                // 将文本内容显示在UI的TextBlock上
+                return textContent.ToString();
+            }
+            else
+            {
+                return null;
             }
         }
 
@@ -425,6 +434,121 @@ namespace HandleControl
             //        break;
             //    }
             //}
+        }
+
+        private bool ReadBtnResult([CallerMemberName]string caller="",string compareStr="")
+        {
+            string pattern = null;
+            switch(caller)
+            {
+                case "Button_Click_5":
+                    pattern = @".*Prog Flash Data.*Succeed.*";
+                    break;
+                case "Button_Click_6":
+                    pattern = @".*Load Prog File.*Done.*";
+                    break;
+            }
+            return Regex.IsMatch(compareStr, pattern);
+        }
+
+        private void Button_Click_5(object sender, RoutedEventArgs e)
+        {
+            ClearLog();   
+            //从controlHandles中获取Prog控件的句柄
+            foreach (var handle in controlHandles)
+            {
+                int controlID = GetDlgCtrlID(handle); // 获取控件ID
+                if (controlID == 1001)
+                {
+                    ClickButton(handle); // 模拟点击Prog按钮
+
+                    break;
+                }
+            }
+            string pattern = @".*Prog Flash Data.*Succeed.*";
+            string multiLineString = @"Some other lines
+More lines here
+Prog File Data and some text
+Some more text Succeed!";
+
+            //从controlHandles中获取Log控件的句柄
+            //foreach (var handle in controlHandles)
+            //{
+            //    int controlID = GetDlgCtrlID(handle); // 获取控件ID
+            //    if (controlID == 1010)
+            //    {
+            //        string logContent = ReadLogContent(handle); // 读取Log控件的内容
+            //        MessageBox.Show(logContent);
+
+            //        string[] lines = multiLineString.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+            //        MessageBox.Show(lines[lines.Length - 1]); // 显示最后一行内容
+
+            //        if (Regex.IsMatch(lines[lines.Length-1], pattern))
+            //        {
+            //            // 匹配成功，执行相应操作
+            //            MessageBox.Show("匹配成功！");
+            //        }
+            //        else
+            //        {
+            //            // 匹配失败，执行其他操作
+            //            MessageBox.Show("匹配失败！");
+            //        }
+            //        this.Log.Text = logContent; // 显示在UI的TextBlock上
+            //        break;
+            //    }
+
+            //}
+        }
+
+        private void ClearLog()
+        {
+            foreach (var handle in controlHandles)
+            {
+                int controlID = GetDlgCtrlID(handle); // 获取控件ID
+                if (controlID == 1014)
+                {
+                    ClickButton(handle); // 模拟点击Clear按钮
+                    break;
+                }
+            }
+        }
+        private void Button_Click_6(object sender, RoutedEventArgs e)
+        {
+
+            foreach (var handle in controlHandles)
+            {
+                int controlID = GetDlgCtrlID(handle); // 获取控件ID
+                if (controlID == 1014)
+                {
+                    ClickButton(handle); // 模拟点击Clear按钮
+                    break;
+                }
+            }
+            foreach (var handle in controlHandles)
+            {
+                int controlID = GetDlgCtrlID(handle); // 获取控件ID
+                if (controlID == 1010)
+                {
+                    StringBuilder sb = null;
+                    // 获取文本框内容的长度
+                    int textLength = SendMessage(handle, WM_GETTEXTLENGTH, 0, sb);
+                    if (textLength > 0)
+                    {
+                        // 创建一个StringBuilder对象来存储文本内容
+                        StringBuilder textContent = new StringBuilder(textLength + 1);
+                        // 获取文本框内容
+                        SendMessage(handle, WM_GETTEXT, textLength + 1, textContent);
+                        // 将文本内容显示在UI的TextBlock上
+                        MessageBox.Show(textContent.ToString());
+                        this.Log.Text = textContent.ToString();
+                        break;
+                    }
+                    else
+                    {
+                        this.Log.Text = "TextBox is empty.";
+                    }
+                }
+            }
         }
     }
 }

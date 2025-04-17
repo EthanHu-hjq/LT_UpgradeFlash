@@ -14,11 +14,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\Project\\Git\\Ethan-Personal-Project\\LT_UpgradeFlash_Lib\\HandleControlWPFTest\\HandleControl\\HandleControl.csproj",
+      "projectUniqueName": "D:\\Project\\Tymphany\\LT_UpgradeFlash\\HandleControlWPFTest\\HandleControl\\HandleControl.csproj",
       "projectName": "HandleControl",
-      "projectPath": "D:\\Project\\Git\\Ethan-Personal-Project\\LT_UpgradeFlash_Lib\\HandleControlWPFTest\\HandleControl\\HandleControl.csproj",
+      "projectPath": "D:\\Project\\Tymphany\\LT_UpgradeFlash\\HandleControlWPFTest\\HandleControl\\HandleControl.csproj",
       "packagesPath": "C:\\Users\\ethan.hu\\.nuget\\packages\\",
-      "outputPath": "D:\\Project\\Git\\Ethan-Personal-Project\\LT_UpgradeFlash_Lib\\HandleControlWPFTest\\HandleControl\\obj\\",
+      "outputPath": "D:\\Project\\Tymphany\\LT_UpgradeFlash\\HandleControlWPFTest\\HandleControl\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
