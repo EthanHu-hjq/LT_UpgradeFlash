@@ -15,6 +15,7 @@ using System.Reflection.Metadata;
 using System.Text.RegularExpressions;
 using System.Runtime.CompilerServices;
 using System.Threading;
+using Microsoft.Win32;
 
 namespace HandleControl
 {
@@ -144,12 +145,14 @@ namespace HandleControl
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void Button_Click(object sender, RoutedEventArgs e)
+        private void OpenExe_Click(object sender, RoutedEventArgs e)
         {
             #region 打开exe
             Process process = new Process();
-            process.StartInfo.FileName = rootPath;
-            process.StartInfo.WorkingDirectory = System.IO.Path.GetDirectoryName(rootPath);//设置工作目录
+            //process.StartInfo.FileName = rootPath;
+            process.StartInfo.FileName = exePath.Text;
+            //process.StartInfo.WorkingDirectory = System.IO.Path.GetDirectoryName(rootPath);//设置工作目录
+            process.StartInfo.WorkingDirectory = System.IO.Path.GetDirectoryName(exePath.Text);//设置工作目录
             process.StartInfo.UseShellExecute = true;
             process.Start();
             #endregion
@@ -212,14 +215,6 @@ namespace HandleControl
                 //}
             }
             #endregion
-
-            //初始化Chip
-            IntPtr comboBoxHandle = FindWindowEx(mainHnadle, IntPtr.Zero, "ComboBox", null);
-            //设置Chip控件的XML文件路径
-            string xmlFilePath = @"D:\Project\Tymphany\HDMI Board_2025-04-15\HDMI Board\LT Upgrade Flash\UpgradeFlash.xml";
-            string defaultSelection = "LT6911(UX/UXB/UXC)";
-            //InitializeComboBox(comboBoxHandle, xmlFilePath, defaultSelection); // 初始化ComboBox控件
-
         }
 
         /// <summary>
@@ -227,7 +222,7 @@ namespace HandleControl
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void Button_Click_1(object sender, RoutedEventArgs e)
+        private void CloseExe_Click(object sender, RoutedEventArgs e)
         {
             Process[] processes = Process.GetProcessesByName("Upgrade_Flash_For_Application");
             foreach (Process process in processes)
@@ -323,7 +318,7 @@ namespace HandleControl
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void Button_Click_2(object sender, RoutedEventArgs e)
+        private void SetProgFile_Click(object sender, RoutedEventArgs e)
         {
             foreach (var handle in controlHandles)
             {
@@ -384,7 +379,7 @@ namespace HandleControl
         const int WM_GETTEXTLENGTH = 0x000E; // 获取文本长度的消息
 
 
-        private void Button_Click_3(object sender, RoutedEventArgs e)
+        private void CheckLog_Click(object sender, RoutedEventArgs e)
         {
             foreach (var handle in controlHandles)
             {
@@ -420,7 +415,7 @@ namespace HandleControl
         }
 
         //选择芯片型号
-        private void Button_Click_4(object sender, RoutedEventArgs e)
+        private void SelectChip_Click(object sender, RoutedEventArgs e)
         {
             IntPtr comboBoxHandle = FindWindowEx(mainHnadle, IntPtr.Zero, "ComboBox", null);
             SendMessage(comboBoxHandle, CB_SELECTSTRING, IntPtr.Zero, Marshal.StringToHGlobalAuto(this.chip.Text));
@@ -516,7 +511,13 @@ namespace HandleControl
             }
             return IntPtr.Zero;
         }
-        private void Button_Click_5(object sender, RoutedEventArgs e)
+
+        /// <summary>
+        /// 模拟点击Prog按钮
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Prog_Click(object sender, RoutedEventArgs e)
         {
             ClearLog();   
             //从controlHandles中获取Prog控件的句柄
@@ -577,7 +578,7 @@ Some more text Succeed!";
                 }
             }
         }
-        private void Button_Click_6(object sender, RoutedEventArgs e)
+        private void ClearLog_Click(object sender, RoutedEventArgs e)
         {
 
             foreach (var handle in controlHandles)
@@ -613,6 +614,47 @@ Some more text Succeed!";
                         this.Log.Text = "TextBox is empty.";
                     }
                 }
+            }
+        }
+
+        private void GetExePathEvent(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog openFileDialog = new OpenFileDialog
+            {
+                Title = "选择文件",
+                Filter = "文本文件|*.txt|图片文件|*.jpg;*.png|所有文件|*.*", // 文件类型过滤器
+                InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Desktop), // 初始路径
+                Multiselect = true, // 允许多选
+                CheckFileExists = true, // 验证文件存在性
+                CheckPathExists = true // 验证路径存在性
+            };
+
+            if (openFileDialog.ShowDialog() == true)
+            {
+                // 获取选中文件路径
+                string[] selectedFiles = openFileDialog.FileNames;
+                exePath.Text = string.Join(", ", selectedFiles);
+            }
+        }
+
+      
+        private void GetProgFilePathEvent(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog openFileDialog = new OpenFileDialog
+            {
+                Title = "选择文件",
+                Filter = "文本文件|*.txt|图片文件|*.jpg;*.png|所有文件|*.*", // 文件类型过滤器
+                InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Desktop), // 初始路径
+                Multiselect = true, // 允许多选
+                CheckFileExists = true, // 验证文件存在性
+                CheckPathExists = true // 验证路径存在性
+            };
+
+            if (openFileDialog.ShowDialog() == true)
+            {
+                // 获取选中文件路径
+                string[] selectedFiles = openFileDialog.FileNames;
+                ProgFilePath.Text = string.Join(", ", selectedFiles);
             }
         }
     }

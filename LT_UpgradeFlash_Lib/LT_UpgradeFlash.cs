@@ -242,7 +242,7 @@ namespace LT_UpgradeFlash_Lib
             }
             catch(Exception ex)
             {
-                resultStr = "";
+                resultStr = "烧录失败，检查芯片连接";
                 return false;
             }
         }
@@ -251,25 +251,43 @@ namespace LT_UpgradeFlash_Lib
         #region 读取按钮事件
         public bool Read(out string resultStr,int timeOut=3000)
         {
-            ClearLog();//清除Log记录
-            IntPtr readHandle = SetControlHandles(1002);//获取读取按钮句柄
-            ClickButton(readHandle);//模拟点击读取按钮
-            ActionIsDone(out resultStr, timeOut);//判断读取是否完成
-            resultStr = ReadLog();//读取烧录结果
-            //判断烧录结果是否成功的正则表达式
-            string pattern = @".*Read Flash Data.*Succeed.*";
-            return Regex.IsMatch(resultStr, pattern);
+            try
+            {
+                ClearLog();//清除Log记录
+                IntPtr readHandle = SetControlHandles(1002);//获取读取按钮句柄
+                ClickButton(readHandle);//模拟点击读取按钮
+                resultStr = "";
+                ActionIsDone(out resultStr, timeOut);//判断读取是否完成
+                resultStr = ReadLog();//读取烧录结果
+                string pattern = @".*Read Flash Data.*Succeed.*";//判断烧录结果是否成功的正则表达式
+                return Regex.IsMatch(resultStr, pattern);
+            }
+            catch (Exception ex) {
+                resultStr = "读取失败,检查芯片连接";
+                return false; 
+            }
+
         }
         #endregion
 
         #region 擦除按钮事件
-        public void Erase(out string resultStr,int timeOut = 3000)
+        public bool Erase(out string resultStr,int timeOut = 3000)
         {
-            ClearLog();//清除Log记录
-            IntPtr eraseHandle = SetControlHandles(1021);//获取擦除按钮句柄
-            ClickButton(eraseHandle);//模拟点击擦除按钮
-            ActionIsDone(out resultStr, timeOut);//判断擦除是否完成
-            resultStr = ReadLog();//读取烧录结果
+            try
+            {
+                ClearLog();//清除Log记录
+                IntPtr eraseHandle = SetControlHandles(1021);//获取擦除按钮句柄
+                ClickButton(eraseHandle);//模拟点击擦除按钮
+                ActionIsDone(out resultStr, timeOut);//判断擦除是否完成
+                resultStr = ReadLog();//读取烧录结果
+                string pattern = @".*Erase.*Done.*";
+                return Regex.IsMatch(resultStr,pattern);
+            }
+            catch (Exception ex) {
+                resultStr = "擦除失败，检查芯片连接";
+                return false;
+            }
+
 
             //判断烧录结果是否成功的正则表达式
             //string pattern = @".*Erase Flash Data.*Succeed.*";
