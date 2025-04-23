@@ -11,51 +11,49 @@
             <RowDefinition Height="auto"/>
             <RowDefinition Height="auto"/>
             <RowDefinition Height="auto"/>
-            <RowDefinition Height="30"/>
             <RowDefinition/>
         </Grid.RowDefinitions>
-        <Grid Grid.Row="0" >
-            <Grid.RowDefinitions>
-                <RowDefinition/>
-                <RowDefinition/>
-            </Grid.RowDefinitions>
-            <StackPanel Grid.Row="0" Orientation="Horizontal">
-                <Button Content="Open exe" Height="30" Margin="10" Width="150" Click="OpenExe_Click"/>
-                <TextBox x:Name="exePath" IsReadOnly="True" Width="450" Height="30" TextWrapping="Wrap" Margin="10"/>
-                <Button Content="选择exe路径" Height="30" Width="100" Margin="10" Click="GetExePathEvent"/>
+        <Grid Grid.Row="0" Margin="5">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="100"/>
+            </Grid.ColumnDefinitions>
+            <Button Grid.Column="0" Content="Open exe" Margin="5" Height="30" Width="70" Click="OpenExe_Click"/>
+            <StackPanel Grid.Column="1" Orientation="Horizontal">
+                <TextBlock Text="exe path:" VerticalAlignment="Center"/>
+                <TextBox x:Name="exePath" Width="400" Height="30"
+                         Text="D:\SoftWare\Microsoft Visual Studio\Project\Tymphany\LT_UpgradeFlash\HDMI Board\LT Upgrade Flash\Upgrade_Flash_For_Application.exe"
+                         TextWrapping="Wrap"/>
+                <Button Content="Browse" Margin="10" Click="BrowseExePath_Click" Width="50" Height="30"/>
             </StackPanel>
-            <Button Grid.Row="1" HorizontalAlignment="Left" Margin="10" Content="Close exe" Height="30" Width="100" Click="CloseExe_Click"/>
+            <Button Content="Close exe" Grid.Column="2" Margin="10" Height="30" Width="70" Click="CloseExe_Click"/>
         </Grid>
-        <StackPanel Grid.Row="1" Orientation="Horizontal">
-            <Button Content="ProgBtn" Height="30" Width="100" Margin="10" Click="Prog_Click"/>
-            <Button Content="Clear Log" Height="30" Width="100" Margin="10" Click="ClearLog_Click"/>
-        </StackPanel>
-        <Grid Grid.Row="2">
-            <Grid.RowDefinitions>
-                <RowDefinition/>
-                <RowDefinition/>
-                <RowDefinition/>
-            </Grid.RowDefinitions>
-            <StackPanel Grid.Row="0" Orientation="Horizontal">
-                <Button Content="set prog file" Height="30" Margin="10" Click="SetProgFile_Click"/>
-                <TextBox x:Name="ProgFilePath" IsReadOnly="True" Width="450" Height="30" TextWrapping="Wrap" Margin="10"/>
-                <Button Content="选择ProgFileP路径" Height="30" Width="100" Margin="10" Click="GetProgFilePathEvent"/>
-            </StackPanel>
-            <StackPanel Grid.Row="1" Orientation="Vertical">
-                <StackPanel Orientation="Horizontal">
-                    <Button Content="CkeckLog" Margin="10" Click="CheckLog_Click"/>
-                    <TextBlock x:Name="Log" Width="auto"/>
-                </StackPanel>
-            </StackPanel>
-            <StackPanel Grid.Row="2" Orientation="Horizontal">
-                <Button Content="select chip" Margin="10" Click="SelectChip_Click"/>
-                <TextBox x:Name="chip" Height="30" Width="100"/>
-            </StackPanel>
-        </Grid>
-        
 
-        <TextBlock x:Name="showhandle" Grid.Row="3" Width="auto"/>
-        <ScrollViewer Grid.Row="4" VerticalScrollBarVisibility="Auto" Height="200">
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <Button Grid.Column="0" HorizontalAlignment="Left" Margin="10,0,0,0" Content="select chip" Height="30" Width="70" Click="SelectChip_Click"/>
+            <StackPanel Grid.Column="1" Orientation="Horizontal">
+                <TextBox x:Name="chip" Height="30" Margin="5,0,0,0" HorizontalAlignment="Left" Width="200"/>
+                <TextBlock Text="14:6911/15:9611" Width="100" VerticalAlignment="Center"></TextBlock>
+            </StackPanel>
+
+            <Button Grid.Column="2" Width="70" Height="30" HorizontalAlignment="Right" Margin="10,0,0,0" Content="CkeckLog" Click="Button_Click_3"/>
+        </Grid>
+
+        <StackPanel Orientation="Horizontal" Grid.Row="2">
+            <Button Content="ProgBtn" Height="30" Width="70" Margin="10" Click="ProgBtn_Click"/>
+            <Button Content="Clear Log" Click="Button_Click_6" Height="30" Width="70"/>
+            <TextBlock x:Name="Log" Width="auto" Height="30" HorizontalAlignment="Left"/>
+            <Button Content="set prog" Height="30" Width="70" Margin="10"  Click="SetProg_Click"/>
+            <TextBlock Margin="20,0,0,0" Height="30" x:Name="showhandle" Width="auto"/>
+        </StackPanel>
+        <ScrollViewer Grid.Row="3" VerticalScrollBarVisibility="Auto" Height="auto">
             <ItemsControl x:Name="itemsControl" Width="auto"></ItemsControl>
         </ScrollViewer>
     </Grid>

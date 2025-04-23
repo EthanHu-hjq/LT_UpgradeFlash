@@ -171,6 +171,7 @@ namespace LT_UpgradeFlash_Lib
         /// <param name="waitForOpenDone">等待exe打开完成时间</param>
         public void OpenUpgradeFlash(string exePath, int waitForOpenDone,string chipSelection)
         {
+
             //启动烧录软件exe
             Process process = new Process();
             process.StartInfo.FileName = exePath;
@@ -201,10 +202,37 @@ namespace LT_UpgradeFlash_Lib
         #endregion
 
         #region 选择芯片型号
+        const int CB_SHOWDROPDOWN = 0x014F;
+        const int CB_SETCURSEL = 0x014E;
+        const int WM_COMMAND = 0x0111;
+        const int CBN_SELCHANGE = 1;
+
         public bool SelectChip(string chipName)
         {
-            IntPtr comboBoxHandle = FindWindowEx(mainHandle, IntPtr.Zero, "ComboBox", null);
+            IntPtr comboBoxHandle = FindWindowEx(mainHandle, IntPtr.Zero, "ComboBox", null);//获取芯片型号下拉框handle
             SendMessage(comboBoxHandle, CB_SELECTSTRING, IntPtr.Zero, Marshal.StringToHGlobalAuto(chipName));
+
+            if(comboBoxHandle != IntPtr.Zero)
+            {
+                //展开下拉列表
+                SendMessage(comboBoxHandle, CB_SHOWDROPDOWN, (IntPtr)1, IntPtr.Zero);
+                System.Threading.Thread.Sleep(500); //等待下拉动画
+                switch(chipName)
+                {
+                    case "LT6911":
+                        SendMessage(comboBoxHandle, CB_SETCURSEL, (IntPtr)13, IntPtr.Zero);
+                        break;
+                    case "LT9611":
+                        SendMessage(comboBoxHandle, CB_SETCURSEL, (IntPtr)14, IntPtr.Zero);
+                        break;
+                }
+
+                // 4. 触发事件
+                int comboBoxId = GetDlgCtrlID(comboBoxHandle);
+                IntPtr wParam = (IntPtr)((CBN_SELCHANGE << 16) | (comboBoxId & 0xFFFF));
+                SendMessage(mainHandle, WM_COMMAND, wParam, comboBoxHandle);
+            }
+
             StringBuilder chipContent = null;
             int comboBoxContentLength = SendMessage(comboBoxHandle, WM_GETTEXTLENGTH, 0, chipContent);
             if(comboBoxContentLength > 0)
@@ -222,20 +250,79 @@ namespace LT_UpgradeFlash_Lib
         #endregion
 
         #region 烧录
+
+        //文件对话框控件handle集合
+        List<IntPtr> fileDialogControlHandles = new List<IntPtr>();
+
+        /// <summary>
+        /// 获取烧录文件对话框控件句柄
+        /// </summary>
+        /// <param name="hwnd">文件对话框窗口handle</param>
+        /// <param name="lParam"></param>
+        /// <returns></returns>
+        private bool EnumFileDialogChildCallback(IntPtr hwnd, int lParam)
+        {
+            fileDialogControlHandles.Add(hwnd);
+            return true; // 继续枚举
+        }
+        [DllImport("user32.dll", SetLastError = true)]
+        static extern IntPtr FindWindow(string lpClassName, string lpWindowName);//查找窗口句柄方法
+
         /// <summary>
         /// 烧录方法
         /// </summary>
         /// <param name="burnFilePath">烧录文件</param>
         /// <param name="waitForDone">烧录完成等待时间</param>
         /// <returns></returns>
-        public bool Prog(out string resultStr, int timeOut=3000)
+        public bool Prog(out string resultStr, string progFilePath ,int timeOut=3000)
         {
             try
             {
+                SetBurnFile("");//设置烧录文件路径为空
+                IntPtr dialogHandle = IntPtr.Zero;//文件对话框Handle
                 ClearLog();//清除Log记录
                 IntPtr progHandle = SetControlHandles(1001);//获取烧录按钮句柄
                 ClickButton(progHandle);//模拟点击烧录按钮
                 resultStr = "";
+
+                #region 获取烧录文件对话框句柄
+                DateTime start = DateTime.Now;
+                while ((DateTime.Now - start).TotalSeconds < 1)
+                {
+                    // 标准文件对话框类名为#32770
+                    dialogHandle = FindWindow("#32770", null);
+                    Thread.Sleep(100);
+                }
+                #endregion
+
+                #region 获取文件选择框handle信息
+                EnumChildWindows(dialogHandle, EnumFileDialogChildCallback, (IntPtr)0); // 枚举子窗口
+                for (int i = 0; i < fileDialogControlHandles.Count; i++)
+                {
+                    IntPtr subHandle = fileDialogControlHandles[i]; // 获取句柄
+                    StringBuilder className = new StringBuilder(256);
+                    StringBuilder text = new StringBuilder(256); // 创建StringBuilder对象用于存储类名和标题
+                    GetClassName(subHandle, className, className.Capacity); // 获取类名
+                    string controlType = className.ToString(); // 获取控件类型
+
+                    //判断是否为文件对话框的文件名输入框
+                    if (controlType == "Edit")
+                    {
+                        SendMessage(subHandle, WM_SETTEXT, 0, progFilePath); // 设置文件名
+                        break;
+                    }
+                }
+                #endregion
+
+                #region 模拟点击文件对话框打开(O)按钮
+                // 多语言适配按钮标题
+
+                IntPtr openButton = FindWindowEx(dialogHandle, IntPtr.Zero, "Button", "打开(&O)");
+                if (openButton == IntPtr.Zero)
+                    openButton = FindWindowEx(dialogHandle, IntPtr.Zero, "Button", "Open(&O)");
+                ClickButton(openButton);
+                #endregion
+
                 ActionIsDone(out resultStr, timeOut);//判断烧录是否完成
                 string pattern = @".*Program Flash Data.*Succeed.*";
                 return Regex.IsMatch(resultStr, pattern);
@@ -295,8 +382,10 @@ namespace LT_UpgradeFlash_Lib
         }
         #endregion
 
-        #region 设置烧录文件
-        public bool SetBurnFile(string burnFilePath)
+        #region 置空烧录文件
+        //单独设置烧录文件路径无法触发exe加载烧录文件需要通过Prog按钮的点击来触发加载文件对话框才可正常加载
+        //所以每次点击烧录按钮前需要先置空烧录文件路径
+        private bool SetBurnFile(string burnFilePath)
         {
             foreach (var handle in controlHandles)
             {

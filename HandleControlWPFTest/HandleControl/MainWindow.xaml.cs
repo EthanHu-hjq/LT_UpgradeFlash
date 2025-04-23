@@ -104,8 +104,8 @@ namespace HandleControl
         //通过句柄想按钮发送BM_CLICK消息来模拟按钮点击1
         public void ClickButton(IntPtr hwnd)
         {
-            SendMessage(hwnd, BM_CLICK, IntPtr.Zero, IntPtr.Zero); // 阻塞模拟按钮点击
-            //PostMessage(hwnd, BM_CLICK, IntPtr.Zero, IntPtr.Zero);//不阻塞模拟按钮点击
+            //SendMessage(hwnd, BM_CLICK, IntPtr.Zero, IntPtr.Zero); // 阻塞模拟按钮点击
+            PostMessage(hwnd, BM_CLICK, IntPtr.Zero, IntPtr.Zero);//不阻塞模拟按钮点击
         }
         #endregion
 
@@ -149,9 +149,7 @@ namespace HandleControl
         {
             #region 打开exe
             Process process = new Process();
-            //process.StartInfo.FileName = rootPath;
             process.StartInfo.FileName = exePath.Text;
-            //process.StartInfo.WorkingDirectory = System.IO.Path.GetDirectoryName(rootPath);//设置工作目录
             process.StartInfo.WorkingDirectory = System.IO.Path.GetDirectoryName(exePath.Text);//设置工作目录
             process.StartInfo.UseShellExecute = true;
             process.Start();
@@ -204,17 +202,17 @@ namespace HandleControl
                 #endregion
 
                 this.itemsControl.Items.Add($"Handle: {handleStr}__Type: {controlType}__caption: {caption}__ControlID:{controlID}"); // 将句柄添加到ItemsControl
-                
-                ////初始化ComboBox控件Chip
-                //if(controlType == "ComboBox")
-                //{
-                //    //设置Chip控件的XML文件路径
-                //    string xmlFilePath = @"D:\Project\Tymphany\HDMI Board_2025-04-15\HDMI Board\LT Upgrade Flash\UpgradeFlash.xml";
-                //    string defaultSelection = "LT6911(UX/UXB/UXC)";
-                //    InitializeComboBox(handle, xmlFilePath,defaultSelection); // 初始化ComboBox控件
-                //}
+
             }
             #endregion
+
+            //初始化Chip
+            IntPtr comboBoxHandle = FindWindowEx(mainHnadle, IntPtr.Zero, "ComboBox", null);
+            //设置Chip控件的XML文件路径
+            string xmlFilePath = @"D:\Project\Tymphany\HDMI Board_2025-04-15\HDMI Board\LT Upgrade Flash\UpgradeFlash.xml";
+            string defaultSelection = "LT6911(UX/UXB/UXC)";
+            //InitializeComboBox(comboBoxHandle, xmlFilePath, defaultSelection); // 初始化ComboBox控件
+
         }
 
         /// <summary>
@@ -318,7 +316,7 @@ namespace HandleControl
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void SetProgFile_Click(object sender, RoutedEventArgs e)
+        private void SetProg_Click(object sender, RoutedEventArgs e)
         {
             foreach (var handle in controlHandles)
             {
@@ -334,7 +332,7 @@ namespace HandleControl
                     }
                     else
                     {
-                        SendMessage(handle,WM_SETTEXT,0, @"D:\Project\Tymphany\HDMI Board_2025-04-15\HDMI Board\LT Upgrade Flash\text.hex");
+                        SendMessage(handle,WM_SETTEXT,0, "");
                         StringBuilder sb = null;
                         // 获取文本框内容的长度
                         int textLength = SendMessage(handle, WM_GETTEXTLENGTH, 0, sb);
@@ -379,7 +377,12 @@ namespace HandleControl
         const int WM_GETTEXTLENGTH = 0x000E; // 获取文本长度的消息
 
 
-        private void CheckLog_Click(object sender, RoutedEventArgs e)
+        /// <summary>
+        /// 读取Log事件
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Button_Click_3(object sender, RoutedEventArgs e)
         {
             foreach (var handle in controlHandles)
             {
@@ -414,23 +417,38 @@ namespace HandleControl
             SendMessage(comboBoxHandle, CB_SELECTSTRING, 0, Marshal.StringToHGlobalAuto(chipName));
         }
 
-        //选择芯片型号
+        #region 选择芯片型号
+        [DllImport("user32.dll", SetLastError = true)]
+        static extern IntPtr FindWindow(string lpClassName, string lpWindowName);
+
+        
+        const int CB_SHOWDROPDOWN = 0x014F;
+        const int CB_SETCURSEL = 0x014E;
+        const int WM_COMMAND = 0x0111;
+        const int CBN_SELCHANGE = 1;
         private void SelectChip_Click(object sender, RoutedEventArgs e)
         {
             IntPtr comboBoxHandle = FindWindowEx(mainHnadle, IntPtr.Zero, "ComboBox", null);
             SendMessage(comboBoxHandle, CB_SELECTSTRING, IntPtr.Zero, Marshal.StringToHGlobalAuto(this.chip.Text));
-            //foreach (var handle in controlHandles)
-            //{
-            //    StringBuilder className = new StringBuilder(256);
-            //    GetClassName(handle, className, className.Capacity); // 获取类名
-            //    string controlType = className.ToString(); // 获取控件类型
-            //    if (controlType == "ComboBox")
-            //    {
-            //        SelectChip(handle, "LT9611(UX/UXC)"); // 选择芯片型号
-            //        break;
-            //    }
-            //}
+
+            if (comboBoxHandle != IntPtr.Zero)
+            {
+                // 2. 展开下拉列表
+                SendMessage(comboBoxHandle, CB_SHOWDROPDOWN, (IntPtr)1, IntPtr.Zero);
+                System.Threading.Thread.Sleep(500); // 等待下拉动画
+
+                int selectItem = int.Parse(this.chip.Text) - 1;
+
+                // 3. 选择第三项（索引2）
+                SendMessage(comboBoxHandle, CB_SETCURSEL, (IntPtr)selectItem, IntPtr.Zero);
+
+                // 4. 触发事件
+                int comboBoxId = GetDlgCtrlID(comboBoxHandle);
+                IntPtr wParam = (IntPtr)((CBN_SELCHANGE << 16) | (comboBoxId & 0xFFFF));
+                SendMessage(mainHnadle, WM_COMMAND, wParam, comboBoxHandle);
+            }
         }
+        #endregion
 
         private bool ReadBtnResult([CallerMemberName]string caller="",string compareStr="")
         {
@@ -512,14 +530,51 @@ namespace HandleControl
             return IntPtr.Zero;
         }
 
+        private void SetProgFIleEmpty()
+        {
+            foreach (var handle in controlHandles)
+            {
+                int controlID = GetDlgCtrlID(handle); // 获取控件ID
+                if (controlID == 1004)
+                {
+                    //SetWindowText(handle, "00001"); // 设置控件标题
+                    bool isEnabled = IsWindowEnabled(handle) != 0;
+                    if (!isEnabled)
+                    {
+                        MessageBox.Show("控件未启用！");
+                        break;
+                    }
+                    else
+                    {
+                        SendMessage(handle, WM_SETTEXT, 0, "");
+                        break;
+                    }
+                }
+            }
+        }
+
+        #region 点击烧录按钮
+        private const int MaxWaitSeconds = 5;
+        List<IntPtr> fileDialogControlHandle = new List<IntPtr>();
+
+        //枚举文件选择框回调函数
+        private bool EnumFileDialogChildCallback(IntPtr hwnd, int lParam)
+        {
+            fileDialogControlHandle.Add(hwnd);
+            return true; // 继续枚举
+        }
+
         /// <summary>
-        /// 模拟点击Prog按钮
+        /// 点击烧录按钮
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void Prog_Click(object sender, RoutedEventArgs e)
+        private void ProgBtn_Click(object sender, RoutedEventArgs e)
         {
+            SetProgFIleEmpty();//清空烧录文件
             ClearLog();   
+            IntPtr dialogHandle = IntPtr.Zero;//文件对话框Handle
+            IntPtr fileHandle = IntPtr.Zero;//文件对话框中文本选择框Handle
             //从controlHandles中获取Prog控件的句柄
             foreach (var handle in controlHandles)
             {
@@ -527,44 +582,50 @@ namespace HandleControl
                 if (controlID == 1001)
                 {
                     ClickButton(handle); // 模拟点击Prog按钮
+                    DateTime start = DateTime.Now;
+                    while ((DateTime.Now - start).TotalSeconds < 1)
+                    {
+                        // 标准文件对话框类名为#32770
+                        dialogHandle = FindWindow("#32770", null);
+                        if (dialogHandle != IntPtr.Zero)
+                        {
+                            StringBuilder title = new StringBuilder(256);
+                            GetWindowText(dialogHandle, title, 256);
+                        }
+                        Thread.Sleep(100);
+                    }
+
+                    #region 获取文件选择框handle信息
+                    EnumChildWindows(dialogHandle, EnumFileDialogChildCallback, 0); // 枚举子窗口
+                    for (int i = 0; i < fileDialogControlHandle.Count; i++)
+                    {
+                        IntPtr subHandle = fileDialogControlHandle[i]; // 获取句柄
+                        StringBuilder className = new StringBuilder(256);
+                        StringBuilder text = new StringBuilder(256); // 创建StringBuilder对象用于存储类名和标题
+                        GetClassName(subHandle, className, className.Capacity); // 获取类名
+                        string controlType = className.ToString(); // 获取控件类型
+
+                        string handleStr = fileDialogControlHandle[i].ToString("X");
+                        //判断是否为文件对话框的文件名输入框
+                        if (controlType == "Edit")
+                        {
+                            SendMessage(subHandle, WM_SETTEXT, 0, @"D:\Project\Tymphany\LT_UpgradeFlash\HDMI Board\LT FW  Files\LT9611 UXC\lt9611uxc_fw.bin"); // 设置控件标题
+                        }
+                    }
+                    #endregion
+
+                    // 多语言适配按钮标题
+                    IntPtr openButton = FindWindowEx(dialogHandle, IntPtr.Zero, "Button", "打开(&O)");
+                    if (openButton == IntPtr.Zero)
+                        openButton = FindWindowEx(dialogHandle, IntPtr.Zero, "Button", "Open(&O)");
+                    SendMessage(openButton, BM_CLICK, IntPtr.Zero, IntPtr.Zero); // 触发点击[1,6](@ref)
                     ActionIsDone(4); // 判断动作是否完成，如果反复调用ReadLog()返回的字符串的长度大于2或时间达到4秒则表示完成
                     break;
                 }
             }
-            string pattern = @".*Prog Flash Data.*Succeed.*";
-            string multiLineString = @"Some other lines
-More lines here
-Prog File Data and some text
-Some more text Succeed!";
-
-            //从controlHandles中获取Log控件的句柄
-            //foreach (var handle in controlHandles)
-            //{
-            //    int controlID = GetDlgCtrlID(handle); // 获取控件ID
-            //    if (controlID == 1010)
-            //    {
-            //        string logContent = ReadLogContent(handle); // 读取Log控件的内容
-            //        MessageBox.Show(logContent);
-
-            //        string[] lines = multiLineString.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
-            //        MessageBox.Show(lines[lines.Length - 1]); // 显示最后一行内容
-
-            //        if (Regex.IsMatch(lines[lines.Length-1], pattern))
-            //        {
-            //            // 匹配成功，执行相应操作
-            //            MessageBox.Show("匹配成功！");
-            //        }
-            //        else
-            //        {
-            //            // 匹配失败，执行其他操作
-            //            MessageBox.Show("匹配失败！");
-            //        }
-            //        this.Log.Text = logContent; // 显示在UI的TextBlock上
-            //        break;
-            //    }
-
-            //}
         }
+
+        #endregion
 
         private void ClearLog()
         {
@@ -578,7 +639,7 @@ Some more text Succeed!";
                 }
             }
         }
-        private void ClearLog_Click(object sender, RoutedEventArgs e)
+        private void Button_Click_6(object sender, RoutedEventArgs e)
         {
 
             foreach (var handle in controlHandles)
@@ -617,44 +678,30 @@ Some more text Succeed!";
             }
         }
 
-        private void GetExePathEvent(object sender, RoutedEventArgs e)
+        /// <summary>
+        /// 选择exe路径
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void BrowseExePath_Click(object sender, RoutedEventArgs e)
         {
-            OpenFileDialog openFileDialog = new OpenFileDialog
-            {
-                Title = "选择文件",
-                Filter = "文本文件|*.txt|图片文件|*.jpg;*.png|所有文件|*.*", // 文件类型过滤器
-                InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Desktop), // 初始路径
-                Multiselect = true, // 允许多选
-                CheckFileExists = true, // 验证文件存在性
-                CheckPathExists = true // 验证路径存在性
-            };
+            //创建对话框实例
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+            //设置文件类型过滤器
+            openFileDialog.Filter = "exe文件 (*.exe)|*.exe|所有文件(*.*)|*.*";
+            //设置默认文件路径
+            openFileDialog.InitialDirectory = @"D:\SoftWare\Microsoft Visual Studio\Project\Tymphany\LT_UpgradeFlash\HDMI Board\LT Upgrade Flash";
+            //设置默认文件名
+            openFileDialog.FileName = "Upgrade_Flash_For_Application.exe";
 
-            if (openFileDialog.ShowDialog() == true)
+            //显示对话框
+            bool? result = openFileDialog.ShowDialog();
+            if (result == true)
             {
-                // 获取选中文件路径
-                string[] selectedFiles = openFileDialog.FileNames;
-                exePath.Text = string.Join(", ", selectedFiles);
-            }
-        }
-
-      
-        private void GetProgFilePathEvent(object sender, RoutedEventArgs e)
-        {
-            OpenFileDialog openFileDialog = new OpenFileDialog
-            {
-                Title = "选择文件",
-                Filter = "文本文件|*.txt|图片文件|*.jpg;*.png|所有文件|*.*", // 文件类型过滤器
-                InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Desktop), // 初始路径
-                Multiselect = true, // 允许多选
-                CheckFileExists = true, // 验证文件存在性
-                CheckPathExists = true // 验证路径存在性
-            };
-
-            if (openFileDialog.ShowDialog() == true)
-            {
-                // 获取选中文件路径
-                string[] selectedFiles = openFileDialog.FileNames;
-                ProgFilePath.Text = string.Join(", ", selectedFiles);
+                //获取选择的文件路径
+                string filePath = openFileDialog.FileName;
+                //设置exe路径文本框的值
+                this.exePath.Text = filePath;
             }
         }
     }
