@@ -82,7 +82,7 @@ namespace HandleControl
         }
 
         //定义exe路径1
-        static string rootPath = @"D:\SoftWare\Microsoft Visual Studio\Project\Tymphany\LT_UpgradeFlash\HDMI Board\LT Upgrade Flash\Upgrade_Flash_For_Application.exe";
+        static string rootPath = @"D:\Project\Tymphany\LT_UpgradeFlash\HDMI Board\LT Upgrade Flash\Upgrade_Flash_For_Application.exe";
         public MainWindow()
         {
             InitializeComponent();
@@ -139,6 +139,52 @@ namespace HandleControl
         }
         #endregion
 
+        /// <summary>
+        /// 点击对话框确定按钮
+        /// </summary>
+        private bool ClickDialogButton(string caption)
+        {
+            #region 获取Error对话框句柄
+            IntPtr dialogHandle = new IntPtr();
+            dialogHandle = IntPtr.Zero;
+            DateTime start = DateTime.Now;
+            while ((DateTime.Now - start).TotalSeconds < 2)
+            {
+                // 标准文件对话框类名为#32770
+                dialogHandle = FindWindow("#32770", null);
+                Thread.Sleep(100);
+            }
+
+            if (dialogHandle != IntPtr.Zero)
+            {
+                #region 获取Error对话框handle信息
+                EnumChildWindows(dialogHandle, EnumDialogChildCallback, (IntPtr)0); // 枚举子窗口
+                for (int i = 0; i < DialogControlHandle.Count; i++)
+                {
+                    IntPtr subHandle = DialogControlHandle[i]; // 获取句柄
+                    StringBuilder className = new StringBuilder(256);
+                    GetClassName(subHandle, className, className.Capacity); // 获取类名
+                    string controlType = className.ToString(); // 获取控件类型
+                    StringBuilder captionNmae = new StringBuilder();
+                    int length = SendMessage(subHandle, WM_GETTEXTLENGTH, (IntPtr)0, (IntPtr)0);
+                    SendMessage(subHandle, WM_GETTEXT, captionNmae.Capacity, captionNmae);
+                    //GetWindowText(subHandle, captionNmae, 0);
+
+                    //判断是否为文件对话框的文件名输入框
+                    if ((controlType == "Button") || (captionNmae.ToString() == caption))
+                    {
+                        ClickButton(subHandle);
+                        break;
+                    }
+                }
+                #endregion
+                return true;//如果获取到对话框句柄返回true，否则返回false
+            }
+            return false;
+
+            #endregion
+
+        }
         IntPtr mainHnadle = IntPtr.Zero; // 主窗口句柄11
         /// <summary>
         /// 打开exe
@@ -147,72 +193,106 @@ namespace HandleControl
         /// <param name="e"></param>
         private void OpenExe_Click(object sender, RoutedEventArgs e)
         {
-            #region 打开exe
-            Process process = new Process();
-            process.StartInfo.FileName = exePath.Text;
-            process.StartInfo.WorkingDirectory = System.IO.Path.GetDirectoryName(exePath.Text);//设置工作目录
-            process.StartInfo.UseShellExecute = true;
-            process.Start();
-            #endregion
-
-            Thread.Sleep(3000);
-            #region 获取窗口句柄
-            process.WaitForInputIdle(); // 等待进程进入空闲状态
-            IntPtr hWnd = process.MainWindowHandle; // 获取主窗口句柄
-            if(hWnd == IntPtr.Zero)
+            try
             {
-                Thread.Sleep(1000); // 等待1秒
-                hWnd = process.MainWindowHandle; // 再次获取主窗口句柄
-            }
-            //将句柄显示到UI的TextBlock上
-            if (hWnd != IntPtr.Zero)
-            {
-                string handle = hWnd.ToString("X");
-                this.showhandle.Text = "Handle: " + handle;
-            }
-            else
-            {
-                this.showhandle.Text = "Handle: Not Found";
-            }
-            mainHnadle = hWnd; // 保存主窗口句柄
-            #endregion
-
-            #region 获取handle信息
-            EnumChildWindows(hWnd, EnumChildCallback, 0); // 枚举子窗口
-            for (int i = 0; i < controlHandles.Count; i++)
-            {
-                IntPtr handle = controlHandles[i]; // 获取句柄
-                StringBuilder className = new StringBuilder(256);
-                StringBuilder text = new StringBuilder(256); // 创建StringBuilder对象用于存储类名和标题
-
-                GetClassName(handle, className, className.Capacity); // 获取类名
-                int controlID = GetDlgCtrlID(handle); // 获取控件ID
-                if (controlID == 1006)
-                {
-                    SendMessage(handle,WM_SETTEXT,0, @"0001"); // 设置控件标题
-                }
-
-                string handleStr = controlHandles[i].ToString("X");
-                string controlType = className.ToString(); // 获取控件类型
-
-                #region 获取控件caption
-                const int maxLength = 256;
-                StringBuilder caption = new StringBuilder(maxLength);
-                int lenghth = GetWindowText(handle, caption, maxLength); // 获取控件标题
+                #region 打开exe
+                Process process = new Process();
+                process.StartInfo.FileName = exePath.Text;
+                process.StartInfo.WorkingDirectory = System.IO.Path.GetDirectoryName(exePath.Text);//设置工作目录
+                process.StartInfo.UseShellExecute = true;
+                process.Start();
                 #endregion
 
-                this.itemsControl.Items.Add($"Handle: {handleStr}__Type: {controlType}__caption: {caption}__ControlID:{controlID}"); // 将句柄添加到ItemsControl
+                #region 获取Error对话框句柄
+                IntPtr dialogHandle = new IntPtr();
+                DateTime start = DateTime.Now;
+                while ((DateTime.Now - start).TotalSeconds < 1)
+                {
+                    // 标准文件对话框类名为#32770
+                    dialogHandle = FindWindow("#32770", null);
+                    Thread.Sleep(100);
+                }
+                #endregion
+                #region 获取Error对话框handle信息
+                EnumChildWindows(dialogHandle, EnumDialogChildCallback, (IntPtr)0); // 枚举子窗口
+                for (int i = 0; i < DialogControlHandle.Count; i++)
+                {
+                    IntPtr subHandle = DialogControlHandle[i]; // 获取句柄
+                    StringBuilder className = new StringBuilder(256);
+                    GetClassName(subHandle, className, className.Capacity); // 获取类名
+                    string controlType = className.ToString(); // 获取控件类型
+                    StringBuilder caption = new StringBuilder();
+                    GetWindowText(subHandle,caption, caption.Capacity);
 
+
+                    //判断是否为文件对话框的文件名输入框
+                    if (controlType == "Button" || caption.ToString() == "确定")
+                    {
+                        ClickButton(subHandle);
+                        break;
+                    }
+                }
+                #endregion
+
+
+                Thread.Sleep(3000);
+                #region 获取窗口句柄
+                process.WaitForInputIdle(); // 等待进程进入空闲状态
+                IntPtr hWnd = process.MainWindowHandle; // 获取主窗口句柄
+                if (hWnd == IntPtr.Zero)
+                {
+                    Thread.Sleep(1000); // 等待1秒
+                    hWnd = process.MainWindowHandle; // 再次获取主窗口句柄
+                }
+                //将句柄显示到UI的TextBlock上
+                if (hWnd != IntPtr.Zero)
+                {
+                    string handle = hWnd.ToString("X");
+                    this.showhandle.Text = "Handle: " + handle;
+                }
+                else
+                {
+                    this.showhandle.Text = "Handle: Not Found";
+                }
+                mainHnadle = hWnd; // 保存主窗口句柄
+                #endregion
+
+                #region 获取handle信息
+                EnumChildWindows(hWnd, EnumChildCallback, 0); // 枚举子窗口
+                for (int i = 0; i < controlHandles.Count; i++)
+                {
+                    IntPtr handle = controlHandles[i]; // 获取句柄
+                    StringBuilder className = new StringBuilder(256);
+                    StringBuilder text = new StringBuilder(256); // 创建StringBuilder对象用于存储类名和标题
+
+                    GetClassName(handle, className, className.Capacity); // 获取类名
+                    int controlID = GetDlgCtrlID(handle); // 获取控件ID
+                    if (controlID == 1006)
+                    {
+                        SendMessage(handle, WM_SETTEXT, 0, @"0001"); // 设置控件标题
+                    }
+
+                    string handleStr = controlHandles[i].ToString("X");
+                    string controlType = className.ToString(); // 获取控件类型
+
+                    #region 获取控件caption
+                    const int maxLength = 256;
+                    StringBuilder caption = new StringBuilder(maxLength);
+                    int lenghth = GetWindowText(handle, caption, maxLength); // 获取控件标题
+                    #endregion
+
+                    this.itemsControl.Items.Add($"Handle: {handleStr}__Type: {controlType}__caption: {caption}__ControlID:{controlID}"); // 将句柄添加到ItemsControl
+
+                }
+                #endregion
             }
-            #endregion
+            catch (Exception ex)
+            {
+                
+            }
+            
 
-            //初始化Chip
-            IntPtr comboBoxHandle = FindWindowEx(mainHnadle, IntPtr.Zero, "ComboBox", null);
-            //设置Chip控件的XML文件路径
-            string xmlFilePath = @"D:\Project\Tymphany\HDMI Board_2025-04-15\HDMI Board\LT Upgrade Flash\UpgradeFlash.xml";
-            string defaultSelection = "LT6911(UX/UXB/UXC)";
-            //InitializeComboBox(comboBoxHandle, xmlFilePath, defaultSelection); // 初始化ComboBox控件
-
+            
         }
 
         /// <summary>
@@ -426,6 +506,7 @@ namespace HandleControl
         const int CB_SETCURSEL = 0x014E;
         const int WM_COMMAND = 0x0111;
         const int CBN_SELCHANGE = 1;
+
         private void SelectChip_Click(object sender, RoutedEventArgs e)
         {
             IntPtr comboBoxHandle = FindWindowEx(mainHnadle, IntPtr.Zero, "ComboBox", null);
@@ -442,10 +523,27 @@ namespace HandleControl
                 // 3. 选择第三项（索引2）
                 SendMessage(comboBoxHandle, CB_SETCURSEL, (IntPtr)selectItem, IntPtr.Zero);
 
+                // 显式关闭下拉框
+                SendMessage(comboBoxHandle, CB_SHOWDROPDOWN, (IntPtr)0, IntPtr.Zero);
+                System.Threading.Thread.Sleep(100);
                 // 4. 触发事件
                 int comboBoxId = GetDlgCtrlID(comboBoxHandle);
                 IntPtr wParam = (IntPtr)((CBN_SELCHANGE << 16) | (comboBoxId & 0xFFFF));
                 SendMessage(mainHnadle, WM_COMMAND, wParam, comboBoxHandle);
+                ClickDialogButton("确定");
+
+                foreach (var handle in controlHandles)
+                {
+                    int controlID = GetDlgCtrlID(handle); // 获取控件ID
+                    if (controlID == 1009)
+                    {
+                        int length = SendMessage(handle, WM_GETTEXTLENGTH,(IntPtr)0, 0);
+                        StringBuilder address = new StringBuilder();
+                        SendMessage(handle, WM_GETTEXT, address.Capacity, address);
+                        MessageBox.Show(address.ToString());
+                        break;
+                    }
+                }
             }
         }
         #endregion
@@ -466,17 +564,16 @@ namespace HandleControl
         }
 
         bool isTimeOut = false;
-        private bool ActionIsDone(int timeOut)
+        private bool ActionIsDone(string pattern, int timeOut)
         {
             //判断动作是否完成，如果反复调用ReadLog()返回的字符串的长度大于2或时间达到timeOut则表示完成
             int count = 0;
             while (true)
             {
                 string log = ReadLog();
-                if (log.Length > 3 || count >= timeOut * 1000)
+                if (Regex.IsMatch(log,pattern) || count >= timeOut * 1000)
                 {
-                    isTimeOut = true;
-                    return true;
+                    return Regex.IsMatch(log, pattern);
                 }
                 Thread.Sleep(100);
                 count += 100;
@@ -555,12 +652,12 @@ namespace HandleControl
 
         #region 点击烧录按钮
         private const int MaxWaitSeconds = 5;
-        List<IntPtr> fileDialogControlHandle = new List<IntPtr>();
+        List<IntPtr> DialogControlHandle = new List<IntPtr>();
 
         //枚举文件选择框回调函数
-        private bool EnumFileDialogChildCallback(IntPtr hwnd, int lParam)
+        private bool EnumDialogChildCallback(IntPtr hwnd, int lParam)
         {
-            fileDialogControlHandle.Add(hwnd);
+            DialogControlHandle.Add(hwnd);
             return true; // 继续枚举
         }
 
@@ -596,16 +693,16 @@ namespace HandleControl
                     }
 
                     #region 获取文件选择框handle信息
-                    EnumChildWindows(dialogHandle, EnumFileDialogChildCallback, 0); // 枚举子窗口
-                    for (int i = 0; i < fileDialogControlHandle.Count; i++)
+                    EnumChildWindows(dialogHandle, EnumDialogChildCallback, 0); // 枚举子窗口
+                    for (int i = 0; i < DialogControlHandle.Count; i++)
                     {
-                        IntPtr subHandle = fileDialogControlHandle[i]; // 获取句柄
+                        IntPtr subHandle =DialogControlHandle[i]; // 获取句柄
                         StringBuilder className = new StringBuilder(256);
                         StringBuilder text = new StringBuilder(256); // 创建StringBuilder对象用于存储类名和标题
                         GetClassName(subHandle, className, className.Capacity); // 获取类名
                         string controlType = className.ToString(); // 获取控件类型
 
-                        string handleStr = fileDialogControlHandle[i].ToString("X");
+                        string handleStr = DialogControlHandle[i].ToString("X");
                         //判断是否为文件对话框的文件名输入框
                         if (controlType == "Edit")
                         {
@@ -619,7 +716,8 @@ namespace HandleControl
                     if (openButton == IntPtr.Zero)
                         openButton = FindWindowEx(dialogHandle, IntPtr.Zero, "Button", "Open(&O)");
                     SendMessage(openButton, BM_CLICK, IntPtr.Zero, IntPtr.Zero); // 触发点击[1,6](@ref)
-                    ActionIsDone(4); // 判断动作是否完成，如果反复调用ReadLog()返回的字符串的长度大于2或时间达到4秒则表示完成
+                    string pattern = @".*Prog Flash Data.*Succeed.*";
+                    bool isOk = ActionIsDone(pattern,10); // 判断动作是否完成，如果反复调用ReadLog()返回的字符串的长度大于2或时间达到4秒则表示完成
                     break;
                 }
             }
@@ -702,6 +800,81 @@ namespace HandleControl
                 string filePath = openFileDialog.FileName;
                 //设置exe路径文本框的值
                 this.exePath.Text = filePath;
+            }
+        }
+
+        private void Erase_Click(object sender, RoutedEventArgs e)
+        {
+            ClearLog();
+            int controlID = 0;
+            StringBuilder caption = new StringBuilder();
+
+            IntPtr dialogHandle = new IntPtr();
+
+            foreach(var handle in controlHandles)
+            {
+                controlID = GetDlgCtrlID(handle); // 获取控件ID
+                if (controlID==1021)
+                {
+                    ClickButton(handle);
+                    break;
+                }
+            }
+
+            #region 获取Error对话框句柄
+            DateTime start = DateTime.Now;
+            while ((DateTime.Now - start).TotalSeconds < 1)
+            {
+                // 标准文件对话框类名为#32770
+                dialogHandle = FindWindow("#32770", null);
+                Thread.Sleep(100);
+            }
+            #endregion
+            #region 获取Error对话框handle信息
+            EnumChildWindows(dialogHandle, EnumDialogChildCallback, (IntPtr)0); // 枚举子窗口
+            for (int i = 0; i < DialogControlHandle.Count; i++)
+            {
+                IntPtr subHandle = DialogControlHandle[i]; // 获取句柄
+                StringBuilder className = new StringBuilder(256);
+                GetClassName(subHandle, className, className.Capacity); // 获取类名
+                string controlType = className.ToString(); // 获取控件类型
+                GetWindowText(subHandle, caption, caption.Capacity);
+
+                //判断是否为文件对话框的文件名输入框
+                if (controlType == "Button" || caption.ToString() == "确定")
+                {
+                    ClickButton(subHandle);
+                    break;
+                }
+            }
+            #endregion
+
+
+
+            foreach (var handle in controlHandles)
+            {
+                controlID = GetDlgCtrlID(handle); // 获取控件ID
+                if (controlID == 1010)
+                {
+                    StringBuilder sb = null;
+                    // 获取文本框内容的长度
+                    int textLength = SendMessage(handle, WM_GETTEXTLENGTH, 0, sb);
+                    if (textLength > 0)
+                    {
+                        // 创建一个StringBuilder对象来存储文本内容
+                        StringBuilder textContent = new StringBuilder(textLength + 1);
+                        // 获取文本框内容
+                        SendMessage(handle, WM_GETTEXT, textLength + 1, textContent);
+                        // 将文本内容显示在UI的TextBlock上
+                        //MessageBox.Show(textContent.ToString());
+                        this.Log.Text = textContent.ToString();
+                        break;
+                    }
+                    else
+                    {
+                        this.Log.Text = "TextBox is empty.";
+                    }
+                }
             }
         }
     }
