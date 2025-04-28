@@ -53,6 +53,7 @@
             <Button Content="set prog" Height="30" Width="70" Margin="10"  Click="SetProg_Click"/>
             <TextBlock Margin="20,0,0,0" Height="30" x:Name="showhandle" Width="auto"/>
             <Button Content="Erase" Height="30" Width="70" Click="Erase_Click"/>
+            <Button Content="Read" Height="30" Width="70" Click="Read_Click"/>
         </StackPanel>
         <ScrollViewer Grid.Row="3" VerticalScrollBarVisibility="Auto" Height="auto">
             <ItemsControl x:Name="itemsControl" Width="auto"></ItemsControl>

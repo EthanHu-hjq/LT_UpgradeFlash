@@ -27,6 +27,8 @@ namespace LT_UpgradeFlash_Lib
         static extern int SendMessage(IntPtr hWnd, int msg, IntPtr wParam, IntPtr lParam);
         [DllImport("user32.dll", CharSet = CharSet.Auto)]
         static extern int GetWindowText(IntPtr hWnd, StringBuilder caption, int count);
+        [DllImport("user32.dll", SetLastError = true)]
+        private static extern int GetWindowTextLength(IntPtr hWnd);
         [DllImport("user32.dll", CharSet = CharSet.Auto)]
         static extern int GetDlgCtrlID(IntPtr hWnd);
         [DllImport("user32.dll", CharSet = CharSet.Auto)]
@@ -159,18 +161,38 @@ namespace LT_UpgradeFlash_Lib
         }
 
         /// <summary>
+        /// 获取对话框标题
+        /// </summary>
+        /// <param name="intPtr"></param>
+        /// <returns></returns>
+        private string GetWindowTitle(IntPtr intPtr)
+        {
+            int length = GetWindowTextLength(intPtr);
+            if (length == 0)
+            {
+                return string.Empty;
+            }
+            StringBuilder stringBuilder = new StringBuilder(length + 1);
+            GetWindowText(intPtr, stringBuilder, stringBuilder.Capacity);
+            return stringBuilder.ToString();
+        }
+
+        /// <summary>
         /// 点击对话框确定按钮
         /// </summary>
-        private void ClickDialogButton(string caption)
+        private void ClickDialogButton(string dialogTilte, string caption)
         {
             #region 获取Error对话框句柄
             IntPtr dialogHandle = new IntPtr();
+            string title = string.Empty;
             dialogHandle = IntPtr.Zero;
             DateTime start = DateTime.Now;
-            while ((DateTime.Now - start).TotalSeconds < 2)
+            while ((DateTime.Now - start).TotalSeconds < 1.5)
             {
                 // 标准文件对话框类名为#32770
                 dialogHandle = FindWindow("#32770", null);
+                title = GetWindowTitle(dialogHandle);
+                if (dialogTilte == title && dialogHandle != IntPtr.Zero) break;
                 Thread.Sleep(100);
             }
 
@@ -190,7 +212,7 @@ namespace LT_UpgradeFlash_Lib
                     //GetWindowText(subHandle, captionNmae, 0);
 
                     //判断是否为文件对话框的文件名输入框
-                    if ((controlType == "Button") || (captionNmae.ToString() == caption))
+                    if ((controlType == "Button") && (captionNmae.ToString() == caption))
                     {
                         ClickButton(subHandle);
                         break;
@@ -224,7 +246,7 @@ namespace LT_UpgradeFlash_Lib
                 process.StartInfo.UseShellExecute = true;
                 process.Start();
 
-                ClickDialogButton("确定");//点击Error对话框确定按钮
+                ClickDialogButton("Error","确定");//点击Error对话框确定按钮
 
                 //等待进程加载完成
                 Thread.Sleep(waitForOpenDone);
@@ -376,22 +398,15 @@ namespace LT_UpgradeFlash_Lib
         #endregion
 
         #region 读取按钮事件
-        public bool Read(out string resultStr,int timeOut=3000)
+        public bool Read(out string resultStr,int timeOut=2)
         {
-            try
-            {
-                ClearLog();//清除Log记录
-                IntPtr readHandle = SetControlHandles(1002);//获取读取按钮句柄
-                ClickButton(readHandle);//模拟点击读取按钮
-                string pattern = @".*Read FLASH Data.*Done.*";//判断烧录结果是否成功的正则表达式
-                resultStr = ReadLog();//读取烧录结果
-                return ActionIsDone(out resultStr, pattern, timeOut);//判断读取是否完成
-            }
-            catch (Exception ex) {
-                resultStr = "读取失败,检查芯片连接";
-                return false; 
-            }
-
+            ClearLog();//清除Log记录
+            IntPtr readHandle = SetControlHandles(1002);//获取读取按钮句柄
+            ClickButton(readHandle);//模拟点击读取按钮
+            ClickDialogButton("Error", "确定");//如果产品连接异常，点击Error对话框确定按钮
+            string pattern = @".*Read FLASH Data.*Done.*";//判断烧录结果是否成功的正则表达式
+            resultStr = ReadLog();//读取烧录结果
+            return ActionIsDone(out resultStr, pattern, timeOut);//判断读取是否完成
         }
         #endregion
 
@@ -414,7 +429,8 @@ namespace LT_UpgradeFlash_Lib
                 }
             }
 
-            ClickDialogButton("确定");
+            ClickDialogButton("Info", "确定");
+            ClickDialogButton("Error", "确定");
 
             resultStr = ReadLog();//读取烧录结果
             string pattern = @".*Done.*";
