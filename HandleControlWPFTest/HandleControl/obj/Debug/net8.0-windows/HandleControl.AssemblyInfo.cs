@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("HandleControl")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+6e029e6e921694b1aa32d4947534f9cf415cef48")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+278b20ccf58afb486d0e40cb2a4bc84789a975fe")]
 [assembly: System.Reflection.AssemblyProductAttribute("HandleControl")]
 [assembly: System.Reflection.AssemblyTitleAttribute("HandleControl")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

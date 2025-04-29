@@ -23,7 +23,7 @@
             <StackPanel Grid.Column="1" Orientation="Horizontal">
                 <TextBlock Text="exe path:" VerticalAlignment="Center"/>
                 <TextBox x:Name="exePath" Width="400" Height="30"
-                         Text="D:\Project\Tymphany\LT_UpgradeFlash\HDMI Board\LT Upgrade Flash\Upgrade_Flash_For_Application.exe"
+                         Text="D:\Project\Tymphany\LT_UpgradeFlash\LT Programmer_708\LT Programmer_20240418\LT Programmer.exe"
                          TextWrapping="Wrap"/>
                 <Button Content="Browse" Margin="10" Click="BrowseExePath_Click" Width="50" Height="30"/>
             </StackPanel>
@@ -43,12 +43,12 @@
                 <TextBlock Text="14:6911/15:9611" Width="100" VerticalAlignment="Center"></TextBlock>
             </StackPanel>
 
-            <Button Grid.Column="2" Width="70" Height="30" HorizontalAlignment="Right" Margin="10,0,0,0" Content="CkeckLog" Click="Button_Click_3"/>
+            <Button Grid.Column="2" Width="70" Height="30" HorizontalAlignment="Right" Margin="10,0,0,0" Content="CkeckLog" Click="GetLog_Click"/>
         </Grid>
 
         <StackPanel Orientation="Horizontal" Grid.Row="2">
             <Button Content="ProgBtn" Height="30" Width="70" Margin="10" Click="ProgBtn_Click"/>
-            <Button Content="Clear Log" Click="Button_Click_6" Height="30" Width="70"/>
+            <Button Content="Clear Log" Click="ClearLog_Click" Height="30" Width="70"/>
             <TextBlock x:Name="Log" Width="auto" Height="30" HorizontalAlignment="Left"/>
             <Button Content="set prog" Height="30" Width="70" Margin="10"  Click="SetProg_Click"/>
             <TextBlock Margin="20,0,0,0" Height="30" x:Name="showhandle" Width="auto"/>

@@ -8,6 +8,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 
 namespace LT_UpgradeFlash_dll
 {
@@ -38,6 +39,14 @@ namespace LT_UpgradeFlash_dll
         static extern bool SetForegroundWindow(IntPtr hWnd);//设置窗口为前景窗口
         [DllImport("user32.dll", CharSet = CharSet.Auto)]
         static extern IntPtr FindWindowEx(IntPtr hwndParent, IntPtr hwndChildAfter, string lpszClass, string lpszWindow);//查找子窗口句柄
+        [DllImport("user32.dll")]
+        private static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
+
+        [DllImport("user32.dll")]
+        private static extern bool IsIconic(IntPtr hWnd);
+
+        [DllImport("user32.dll")]
+        private static extern bool OpenIcon(IntPtr hWnd);
 
         #endregion
 
@@ -58,6 +67,10 @@ namespace LT_UpgradeFlash_dll
         const int CBN_SELCHANGE = 1;//下拉列表框选中项改变的消息
         const int CB_SELECTSTRING = 0x014D; // ComboBox选择字符串消息
         const int WM_SETTEXT = 0x000C;//设置文本消息
+        const int SW_HIDE = 0;      // 隐藏窗口
+        const int SW_SHOW = 5;      // 显示窗口
+        const int SW_MINIMIZE = 6;  // 最小化窗口
+        const int SW_RESTORE = 9;   // 恢复窗口
         #endregion
 
         #region 子方法
@@ -79,7 +92,7 @@ namespace LT_UpgradeFlash_dll
             DateTime start = DateTime.Now;
             while((DateTime.Now - start).TotalSeconds <1.5)
             {
-                dialogHandle = FindWindow("#32770",null);
+                dialogHandle = FindWindow("#32770",dialogTitle);
                 title  = GetWindowTitle(dialogHandle);
                 if ((dialogHandle != IntPtr.Zero) && (title == dialogTitle))
                 {
@@ -153,38 +166,6 @@ namespace LT_UpgradeFlash_dll
                 }
             }
 
-            //DateTime start = DateTime.Now;
-            //while ((DateTime.Now - start).TotalSeconds < 3)
-            //{
-            //    dialogHandle = FindWindow("#32770", null);
-            //    title = GetWindowTitle(dialogHandle);
-            //    if ((dialogHandle != IntPtr.Zero))
-            //    {
-            //        //枚举对话框获取对话框所有控件句柄
-            //        EnumChildWindows(dialogHandle, EnumDialogChildCallback, (IntPtr)0);
-            //        StringBuilder className = new StringBuilder(256);
-
-            //        //遍历控件句柄，查找并点击指定按钮
-            //        foreach (var handle in DialogControlHandles)
-            //        {
-            //            //获取控件类型
-            //            GetClassName(handle, className, className.Capacity);
-            //            string classNameStr = className.ToString();
-
-            //            //判断控件类型是否为按钮并且按钮文本是否为指定文本，是则点击
-            //            if (classNameStr == "Button" && GetWindowTitle(handle) == captionName)
-            //            {
-            //                //点击按钮
-            //                //PostMessage(handle, BM_CLICK, IntPtr.Zero, IntPtr.Zero);
-            //                //点击按钮
-            //                SendMessage(handle,BM_CLICK,(IntPtr)0, (IntPtr)0);
-            //                return true;
-            //            }
-            //        }
-            //        break;
-            //    }
-            //    Thread.Sleep(100);
-            //}
             return false;
         }
         /// <summary>
@@ -263,26 +244,31 @@ namespace LT_UpgradeFlash_dll
         /// <returns></returns>
         private string ReadLog()
         {
+            int flag = 0;
             foreach (var handle in exeControlHandles)
             {
                 int controlID = GetDlgCtrlID(handle); // 获取控件ID
                 if (controlID == 1010)
                 {
-                    StringBuilder sb = null;
-                    // 获取文本框内容的长度
-                    int textLength = SendMessage(handle, WM_GETTEXTLENGTH, 0, sb);
-                    if (textLength > 0)
+                    flag += 1;
+                    if(flag == 4)
                     {
-                        // 创建一个StringBuilder对象来存储文本内容
-                        StringBuilder textContent = new StringBuilder(textLength + 1);
-                        // 获取文本框内容
-                        SendMessage(handle, WM_GETTEXT, textLength + 1, textContent);
-                        // 将文本内容显示在UI的TextBlock上
-                        return textContent.ToString();
-                    }
-                    else
-                    {
-                        return "";
+                        StringBuilder sb = null;
+                        // 获取文本框内容的长度
+                        int textLength = SendMessage(handle, WM_GETTEXTLENGTH, 0, sb);
+                        if (textLength > 0)
+                        {
+                            // 创建一个StringBuilder对象来存储文本内容
+                            StringBuilder textContent = new StringBuilder(textLength + 1);
+                            // 获取文本框内容
+                            SendMessage(handle, WM_GETTEXT, textLength + 1, textContent);
+                            // 将文本内容显示在UI的TextBlock上
+                            return textContent.ToString();
+                        }
+                        else
+                        {
+                            return "";
+                        }
                     }
                 }
             }
@@ -321,7 +307,20 @@ namespace LT_UpgradeFlash_dll
         /// <returns>如果Log内容长度小于2则返回true</returns>
         private bool ClearLog()
         {
-            ClickButton(1014);//模拟点击清除按钮
+            int flag = 0;
+            foreach (var handle in exeControlHandles)
+            {
+                int controlID = GetDlgCtrlID(handle);//获取控件ID
+                if (controlID == 1014) //判断控件是否为清除按钮
+                {
+                    flag += 1;
+                    if(flag == 5)
+                    {
+                        ClickButton(handle);//模拟点击清除按钮
+                        break;
+                    }
+                }
+            }
             Thread.Sleep(100);//等待清除完成
             string log = ReadLog();//读取Log记录
             if (log.Length < 2) return true;
@@ -336,26 +335,125 @@ namespace LT_UpgradeFlash_dll
         /// <returns></returns>
         private bool SetBurnFileEmpty()
         {
+            int flag = 0;
             foreach (var handle in exeControlHandles)
             {
-                int ctrlId = GetDlgCtrlID(handle);//获取控件ID
-                if (ctrlId == 1004) //判断控件是否为加载HEX文件的控件
+                int controlID = GetDlgCtrlID(handle); // 获取控件ID
+                if (controlID == 1004)
                 {
-                    SendMessage(handle, WM_SETTEXT, 0, "");//设置HEX文件路径
-                    Thread.Sleep(100);//等待设置完成
-                    StringBuilder sb = null;
-                    // 获取文本框内容的长度
-                    int textLength = SendMessage(handle, WM_GETTEXTLENGTH, 0, sb);
-                    // 创建一个StringBuilder对象来存储文本内容
-                    StringBuilder textContent = new StringBuilder(textLength + 1);
-                    // 获取文本框内容
-                    SendMessage(handle, WM_GETTEXT, textLength + 1, textContent);
-                    if (textContent.ToString() == "") return true;//判断是否设置成功
+                    flag += 1;
+                    if (flag == 4)
+                    {
+                        SendMessage(handle, WM_SETTEXT, 0, "");//设置HEX文件路径
+                        Thread.Sleep(100);//等待设置完成
+                        StringBuilder sb = null;
+                        // 获取文本框内容的长度
+                        int textLength = SendMessage(handle, WM_GETTEXTLENGTH, 0, sb);
+                        // 创建一个StringBuilder对象来存储文本内容
+                        StringBuilder textContent = new StringBuilder(textLength + 1);
+                        // 获取文本框内容
+                        SendMessage(handle, WM_GETTEXT, textLength + 1, textContent);
+                        if (textContent.ToString() == "") return true;//判断是否设置成功 
+                    }
                 }
             }
             return false;
+                        
         }
 
+        // 控制窗口显示状态
+        private static void SetWindowVisibility(IntPtr hWnd, bool isVisible)
+        {
+            if (hWnd == IntPtr.Zero) return;
+
+            if (isVisible)
+            {
+                if (IsIconic(hWnd)) OpenIcon(hWnd); // 恢复最小化
+                ShowWindow(hWnd, 5); // SW_SHOW
+            }
+            else
+            {
+                ShowWindow(hWnd, 0); // SW_HIDE
+            }
+        }
+
+        /// <summary>
+        /// 设置烧录文件路径
+        /// </summary>
+        /// <param name="progFilePath"></param>
+        private void SetProgFile(string progFilePath)
+        {
+            #region 获取烧录文件对话框句柄并设置文件路径
+            IntPtr dialogHandle = IntPtr.Zero;//文件对话框Handle
+            string title = string.Empty;
+
+            DateTime start = DateTime.Now;
+            while ((DateTime.Now - start).TotalSeconds < 1)
+            {
+                // 标准文件对话框类名为#32770
+                dialogHandle = FindWindow("#32770", "文件");
+                title = GetWindowTitle(dialogHandle);
+                if ((dialogHandle != IntPtr.Zero) && (title == "文件"))
+                {
+                    DialogControlHandles.Clear();
+                    #region 获取文件选择框handle信息
+                    EnumChildWindows(dialogHandle, EnumDialogChildCallback, (IntPtr)0); // 枚举子窗口
+                    for (int i = 0; i < DialogControlHandles.Count; i++)
+                    {
+                        IntPtr subHandle = DialogControlHandles[i]; // 获取句柄
+                        StringBuilder className = new StringBuilder(256);
+                        StringBuilder text = new StringBuilder(256); // 创建StringBuilder对象用于存储类名和标题
+                        GetClassName(subHandle, className, className.Capacity); // 获取类名
+                        string controlType = className.ToString(); // 获取控件类型
+
+                        //判断是否为文件对话框的文件名输入框
+                        if (controlType == "Edit")
+                        {
+                            SendMessage(subHandle, WM_SETTEXT, 0, progFilePath); // 设置文件名
+                            break;
+                        }
+                    }
+                    #endregion
+                    break;
+                }
+                Thread.Sleep(100);
+            }
+            #endregion
+            #region 模拟点击文件对话框打开(O)按钮
+            // 多语言适配按钮标题
+            IntPtr openButton = FindWindowEx(dialogHandle, IntPtr.Zero, "Button", "打开(&O)");
+            if (openButton == IntPtr.Zero)
+                openButton = FindWindowEx(dialogHandle, IntPtr.Zero, "Button", "Open(&O)");
+            ClickButton(openButton);
+            #endregion
+        }
+
+        /// <summary>
+        /// 通过ID和caption获取控件句柄
+        /// </summary>
+        /// <param name="controlID"></param>
+        /// <param name="caption"></param>
+        /// <returns></returns>
+        private IntPtr GetHandle(int controlID, string caption)
+        {
+            StringBuilder captionName = new StringBuilder(256);
+            const int maxLength = 256;
+            int ID = 0;
+            foreach (var handle in exeControlHandles)
+            {
+                ID = GetDlgCtrlID(handle); // 获取控件ID
+                if (ID == controlID)
+                {
+                    int lenghth = GetWindowText(handle, captionName, maxLength); // 获取控件标题
+                    if (captionName.ToString() == caption)
+                    {
+                        return handle;
+                        break;
+                    }
+                }
+            }
+            return IntPtr.Zero;
+        }
         #endregion
 
         #region dll调用方法
@@ -389,8 +487,29 @@ namespace LT_UpgradeFlash_dll
             EnumChildWindows(exeHandle, EnumChildCallback, (IntPtr)0);
 
             //判断exe打开是否成功
-            if((exeHandle != IntPtr.Zero)&&(GetWindowTitle(exeHandle)=="UpgradeFlash")) return true;
+            if ((exeHandle != IntPtr.Zero) && (GetWindowTitle(exeHandle) == "UpgradeFlash")) 
+            {
+                ShowExeWindow(false);//显示exe窗口
+                return true;
+            }
             else return false;
+        }
+        #endregion
+
+        #region 控制显示exe窗口
+        public void ShowExeWindow(bool isShow)
+        {
+            if (exeHandle != IntPtr.Zero)
+            {
+                if (isShow)
+                {
+                    SetWindowVisibility(exeHandle, true);
+                }
+                else
+                {
+                    SetWindowVisibility(exeHandle, false);
+                }
+            }
         }
         #endregion
 
@@ -400,7 +519,7 @@ namespace LT_UpgradeFlash_dll
             //关闭exe
             if (exeHandle != IntPtr.Zero)
             {
-                Process[] processes = Process.GetProcessesByName("Upgrade_Flash_For_Application");
+                Process[] processes = Process.GetProcessesByName("LT Programmer");
                 foreach (Process process in processes)
                 {
                     process.Kill();
@@ -429,8 +548,9 @@ namespace LT_UpgradeFlash_dll
         public bool Erase(out string resultString, int timeOut)
         {
             ClearLog();//清除Log记录
-            ClickButton(1021);//点击Erase按钮
-            Thread.Sleep(1000);
+
+            ClickButton(GetHandle(1021, "Erase")); //点击Erase按钮
+            
             for(int i=0;i<30;i++)
             {
                 if (CloseDialog("Info","确定")) break;
@@ -439,6 +559,7 @@ namespace LT_UpgradeFlash_dll
             {
                 if (CloseDialog("Error", "确定")) break;
             }
+
             //判断Erase按钮是否被点击成功
             string pattern = @".*Done.*";
             resultString = ReadLog();//读取日志
@@ -447,34 +568,45 @@ namespace LT_UpgradeFlash_dll
         #endregion
 
         #region 设置芯片类型
-        public bool SelectChip(string chipName)
+        public bool SelectChip(out string addr,string chipName)
         {
-            IntPtr comboBoxHandle = FindWindowEx(exeHandle, IntPtr.Zero, "ComboBox", null);//获取芯片型号下拉框handle
-            SendMessage(comboBoxHandle, CB_SELECTSTRING, IntPtr.Zero, Marshal.StringToHGlobalAuto(chipName));
-
-            if (comboBoxHandle != IntPtr.Zero)
+            IntPtr comboBoxHandle = IntPtr.Zero;
+            foreach (var handle in exeControlHandles)
             {
-                //展开下拉列表
-                SendMessage(comboBoxHandle, CB_SHOWDROPDOWN, (IntPtr)1, IntPtr.Zero);
-                System.Threading.Thread.Sleep(500); //等待下拉动画
-                switch (chipName)
+                int controlID = GetDlgCtrlID(handle); // 获取控件ID
+                if (controlID == 1073)
                 {
-                    case "LT6911":
-                        SendMessage(comboBoxHandle, CB_SETCURSEL, (IntPtr)13, IntPtr.Zero);
-                        break;
-                    case "LT9611":
-                        SendMessage(comboBoxHandle, CB_SETCURSEL, (IntPtr)14, IntPtr.Zero);
-                        break;
-                }
+                    StringBuilder className = new StringBuilder(256);
 
-                // 关闭下拉框
-                SendMessage(comboBoxHandle, CB_SHOWDROPDOWN, (IntPtr)0, IntPtr.Zero);
-                System.Threading.Thread.Sleep(100);
-                // 4. 触发事件
-                int comboBoxId = GetDlgCtrlID(comboBoxHandle);
-                IntPtr wParam = (IntPtr)((CBN_SELCHANGE << 16) | (comboBoxId & 0xFFFF));
-                PostMessage(exeHandle, WM_COMMAND, wParam, comboBoxHandle);
-                CloseDialog("Error","确定");
+                    GetClassName(handle, className, className.Capacity); // 获取类名
+
+                    if (className.ToString() == "ComboBox")
+                    {
+                        comboBoxHandle = handle; // 获取ComboBox控件的句柄
+                                                 //展开下拉列表
+                        SendMessage(comboBoxHandle, CB_SHOWDROPDOWN, (IntPtr)1, IntPtr.Zero);
+                        System.Threading.Thread.Sleep(500); //等待下拉动画
+                        switch (chipName)
+                        {
+                            case "LT6911":
+                                SendMessage(comboBoxHandle, CB_SETCURSEL, (IntPtr)16, IntPtr.Zero);
+                                break;
+                            case "LT9611":
+                                SendMessage(comboBoxHandle, CB_SETCURSEL, (IntPtr)8, IntPtr.Zero);
+                                break;
+                        }
+
+                        // 关闭下拉框
+                        SendMessage(comboBoxHandle, CB_SHOWDROPDOWN, (IntPtr)0, IntPtr.Zero);
+                        System.Threading.Thread.Sleep(100);
+                        // 4. 触发事件
+                        int comboBoxId = GetDlgCtrlID(comboBoxHandle);
+                        IntPtr wParam = (IntPtr)((CBN_SELCHANGE << 16) | (comboBoxId & 0xFFFF));
+                        PostMessage(exeHandle, WM_COMMAND, wParam, comboBoxHandle);
+                        CloseDialog("Error", "确定");
+                        break;
+                    }
+                }
             }
 
             StringBuilder address = new StringBuilder();
@@ -489,8 +621,15 @@ namespace LT_UpgradeFlash_dll
                 }
             }
 
-            if (address.ToString() != "") return true;
-            else return false;
+            if (address.ToString() != "")
+            {
+                addr = address.ToString();
+                return true;
+            }
+            else {
+                addr = "";
+                return false;
+            }
         }
         #endregion
 
@@ -499,48 +638,13 @@ namespace LT_UpgradeFlash_dll
         {
             SetBurnFileEmpty();//设置烧录文件路径为空
             ClearLog();
-            ClickButton(1001);//模拟点击烧录按钮
+            
+            ClickButton(GetHandle(1001, "Prog"));//点击Prog按钮
+
             IntPtr dialogHandle = IntPtr.Zero;//文件对话框Handle
-
             resultStr = "";
-            #region 获取烧录文件对话框句柄
-            DateTime start = DateTime.Now;
-            while ((DateTime.Now - start).TotalSeconds < 1)
-            {
-                // 标准文件对话框类名为#32770
-                dialogHandle = FindWindow("#32770", null);
-                Thread.Sleep(100);
-            }
-            #endregion
+            SetProgFile(progFilePath);//设置烧录文件路径
 
-            DialogControlHandles.Clear();
-            #region 获取文件选择框handle信息
-            EnumChildWindows(dialogHandle, EnumDialogChildCallback, (IntPtr)0); // 枚举子窗口
-            for (int i = 0; i < DialogControlHandles.Count; i++)
-            {
-                IntPtr subHandle = DialogControlHandles[i]; // 获取句柄
-                StringBuilder className = new StringBuilder(256);
-                StringBuilder text = new StringBuilder(256); // 创建StringBuilder对象用于存储类名和标题
-                GetClassName(subHandle, className, className.Capacity); // 获取类名
-                string controlType = className.ToString(); // 获取控件类型
-
-                //判断是否为文件对话框的文件名输入框
-                if (controlType == "Edit")
-                {
-                    SendMessage(subHandle, WM_SETTEXT, 0, progFilePath); // 设置文件名
-                    break;
-                }
-            }
-            #endregion
-
-            #region 模拟点击文件对话框打开(O)按钮
-            // 多语言适配按钮标题
-
-            IntPtr openButton = FindWindowEx(dialogHandle, IntPtr.Zero, "Button", "打开(&O)");
-            if (openButton == IntPtr.Zero)
-                openButton = FindWindowEx(dialogHandle, IntPtr.Zero, "Button", "Open(&O)");
-            ClickButton(openButton);
-            #endregion
             CloseDialog("Error", "确定");//判断是否弹出Error提示框，如果弹出则点击确定按钮关闭对话框
             string pattern = @".*Prog Flash Data.*Succeed.*";
             return ActionIsDone(out resultStr, pattern, timeOut);//判断烧录是否完成 ;
