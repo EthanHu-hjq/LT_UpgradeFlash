@@ -1,0 +1,15 @@
+D:\Project\Tymphany\LT_UpgradeFlash\HandleControlWPFTest\test_case\bin\Debug\net8.0\test_case.exe
+D:\Project\Tymphany\LT_UpgradeFlash\HandleControlWPFTest\test_case\bin\Debug\net8.0\test_case.deps.json
+D:\Project\Tymphany\LT_UpgradeFlash\HandleControlWPFTest\test_case\bin\Debug\net8.0\test_case.runtimeconfig.json
+D:\Project\Tymphany\LT_UpgradeFlash\HandleControlWPFTest\test_case\bin\Debug\net8.0\test_case.dll
+D:\Project\Tymphany\LT_UpgradeFlash\HandleControlWPFTest\test_case\bin\Debug\net8.0\test_case.pdb
+D:\Project\Tymphany\LT_UpgradeFlash\HandleControlWPFTest\test_case\obj\Debug\net8.0\test_case.GeneratedMSBuildEditorConfig.editorconfig
+D:\Project\Tymphany\LT_UpgradeFlash\HandleControlWPFTest\test_case\obj\Debug\net8.0\test_case.AssemblyInfoInputs.cache
+D:\Project\Tymphany\LT_UpgradeFlash\HandleControlWPFTest\test_case\obj\Debug\net8.0\test_case.AssemblyInfo.cs
+D:\Project\Tymphany\LT_UpgradeFlash\HandleControlWPFTest\test_case\obj\Debug\net8.0\test_case.csproj.CoreCompileInputs.cache
+D:\Project\Tymphany\LT_UpgradeFlash\HandleControlWPFTest\test_case\obj\Debug\net8.0\test_case.sourcelink.json
+D:\Project\Tymphany\LT_UpgradeFlash\HandleControlWPFTest\test_case\obj\Debug\net8.0\test_case.dll
+D:\Project\Tymphany\LT_UpgradeFlash\HandleControlWPFTest\test_case\obj\Debug\net8.0\refint\test_case.dll
+D:\Project\Tymphany\LT_UpgradeFlash\HandleControlWPFTest\test_case\obj\Debug\net8.0\test_case.pdb
+D:\Project\Tymphany\LT_UpgradeFlash\HandleControlWPFTest\test_case\obj\Debug\net8.0\test_case.genruntimeconfig.cache
+D:\Project\Tymphany\LT_UpgradeFlash\HandleControlWPFTest\test_case\obj\Debug\net8.0\ref\test_case.dll

@@ -17,6 +17,8 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using Microsoft.Win32;
 using System.Windows.Automation;
+using WindowsInput;
+using WindowsInput.Native;
 
 namespace HandleControl
 {
@@ -326,9 +328,6 @@ namespace HandleControl
             #endregion
         }
 
-        
-        
-
         /// <summary>
         /// 关闭exe
         /// </summary>
@@ -540,22 +539,24 @@ namespace HandleControl
         #region 选择芯片型号
         [DllImport("user32.dll", SetLastError = true)]
         static extern IntPtr FindWindow(string lpClassName, string lpWindowName);
-
-
-
         [DllImport("user32.dll")]
         static extern bool UpdateWindow(IntPtr hWnd);
-
         [DllImport("user32.dll")]
         static extern uint GetWindowThreadProcessId(IntPtr hWnd, out uint lpdwProcessId);
-
         [DllImport("user32.dll")]
         static extern bool AttachThreadInput(uint idAttach, uint idAttachTo, bool fAttach);
-
         [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
         public static extern IntPtr SendMessageTimeout(
     IntPtr hWnd, uint Msg, IntPtr wParam, IntPtr lParam,
     uint fuFlags, uint uTimeout, out IntPtr lpdwResult);
+
+        [DllImport("user32.dll", SetLastError = true)]
+        public static extern int SendMessage(IntPtr hWnd, uint Msg, int wParam, int lParam);
+
+        [DllImport("user32.dll", SetLastError = true)]
+        public static extern int SendMessage(IntPtr hWnd, uint Msg, int wParam, IntPtr lParam);
+        [DllImport("user32.dll", SetLastError = true)]
+        public static extern IntPtr GetParent(IntPtr hWnd);
 
         const int WM_COMMAND = 0x0111;
         const int CBN_SELCHANGE = 1;
@@ -564,9 +565,6 @@ namespace HandleControl
         const int CB_SETCURSEL = 0x014E;
         const int CB_GETDROPPEDSTATE = 0x0157;
 
-
-
-
         //const int CB_SHOWDROPDOWN = 0x014F;
         //const int CB_SETCURSEL = 0x014E;
         //const int WM_COMMAND = 0x0111;
@@ -574,8 +572,11 @@ namespace HandleControl
 
         private void SelectChip_Click(object sender, RoutedEventArgs e)
         {
+            int selectItem = int.Parse(this.chip.Text) - 1;
+            
+            #region 实现方法1
             IntPtr comboBoxHandle = IntPtr.Zero;
-            foreach(var handle in controlHandles)
+            foreach (var handle in controlHandles)
             {
                 int controlID = GetDlgCtrlID(handle); // 获取控件ID
                 if (controlID == 1073)
@@ -584,61 +585,23 @@ namespace HandleControl
 
                     GetClassName(handle, className, className.Capacity); // 获取类名
 
-                    if (className.ToString()== "ComboBox")
+                    if (className.ToString() == "ComboBox")
                     {
                         comboBoxHandle = handle; // 获取ComboBox控件的句柄
+                                                 // 设置选中项（索引从0开始）
+                        PostMessage(comboBoxHandle, CB_SETCURSEL, (IntPtr)selectItem, IntPtr.Zero);
+
+                        // 触发值改变事件
+                        int ctrlID = GetDlgCtrlID(comboBoxHandle);  // 需补充此API声明 
+                        IntPtr wParam = (IntPtr)((CBN_SELCHANGE << 16) | (ushort)ctrlID);
+                        IntPtr parentHandle = GetParent(comboBoxHandle);
+                        SendMessage(parentHandle, WM_COMMAND, wParam, comboBoxHandle);
+                        CloseDialog("Error", "确定");
                         break;
                     }
                 }
             }
-
-            if (comboBoxHandle != IntPtr.Zero)
-            {
-                // 2. 展开下拉列表
-                SendMessage(comboBoxHandle, CB_SHOWDROPDOWN, (IntPtr)1, IntPtr.Zero);
-                System.Threading.Thread.Sleep(500); // 等待下拉动画
-
-                int selectItem = int.Parse(this.chip.Text) - 1;
-
-                // 3. 选择第三项（索引2）
-                SendMessage(comboBoxHandle, CB_SETCURSEL, (IntPtr)selectItem, IntPtr.Zero);
-                UpdateWindow(comboBoxHandle);
-
-                // 显式关闭下拉框
-                SendMessage(comboBoxHandle, CB_SHOWDROPDOWN, (IntPtr)0, IntPtr.Zero);
-                System.Threading.Thread.Sleep(100);
-                // 4. 触发事件
-                // 通过句柄获取ComboBox元素
-
-                int comboBoxId = GetDlgCtrlID(comboBoxHandle);
-                IntPtr wParam = (IntPtr)((CBN_SELCHANGE << 16) | (comboBoxId & 0xFFFF));
-
-                // 发送关闭通知（网页3的事件顺序要求）
-                IntPtr closeWParam = (IntPtr)((CBN_CLOSEUP << 16) | (comboBoxId & 0xFFFF));
-                //SendMessage(mainHnadle, WM_COMMAND, (IntPtr)((CBN_SELCHANGE << 16) | (comboBoxId & 0xFFFF)), comboBoxHandle);
-                // 示例：发送 CB_SETCURSEL 并设置超时
-                IntPtr result;
-                SendMessageTimeout(comboBoxHandle, CB_SETCURSEL, (IntPtr)selectItem, IntPtr.Zero, 0x2, 1000, out result);
-
-                //SendMessage(mainHnadle, WM_COMMAND, wParam, comboBoxHandle);
-                //SendMessage(mainHnadle, WM_COMMAND, closeWParam, comboBoxHandle);
-
-
-                ClickDialogButton("确定");
-
-                foreach (var handle in controlHandles)
-                {
-                    int controlID = GetDlgCtrlID(handle); // 获取控件ID
-                    if (controlID == 1009)
-                    {
-                        int length = SendMessage(handle, WM_GETTEXTLENGTH,(IntPtr)0, 0);
-                        StringBuilder address = new StringBuilder();
-                        SendMessage(handle, WM_GETTEXT, address.Capacity, address);
-                        MessageBox.Show(address.ToString());
-                        break;
-                    }
-                }
-            }
+            #endregion
         }
         #endregion
 
@@ -812,7 +775,13 @@ namespace HandleControl
                             //判断是否为文件对话框的文件名输入框
                             if (controlType == "Edit")
                             {
-                                SendMessage(subHandle, WM_SETTEXT, 0, @"D:\Project\Tymphany\LT_UpgradeFlash\HDMI Board\LT FW  Files\LT9611 UXC\lt9611uxc_fw.bin"); // 设置控件标题
+                                
+                                if(this.chip.Text=="17")
+                                    SendMessage(subHandle, WM_SETTEXT, 0, @"D:\Project\Tymphany\LT_UpgradeFlash\LT Programmer\LT FW  Files\LT6911 UXE\lt6911_fw.bin"); // 设置控件标题
+                                else if(this.chip.Text=="9")
+                                    SendMessage(subHandle, WM_SETTEXT, 0, @"D:\Project\Tymphany\LT_UpgradeFlash\LT Programmer\LT FW  Files\LT9611 UXC\lt9611uxc_fw.bin"); // 设置控件标题
+
+                                //break;
                             }
                         }
                         #endregion
@@ -822,6 +791,8 @@ namespace HandleControl
                         if (openButton == IntPtr.Zero)
                             openButton = FindWindowEx(dialogHandle, IntPtr.Zero, "Button", "Open(&O)");
                         SendMessage(openButton, BM_CLICK, IntPtr.Zero, IntPtr.Zero); // 触发点击[1,6](@ref)
+                        CloseDialog("Error", "确定"); // 关闭错误对话框
+                        CloseDialog("Waring", "确定");
                         string pattern = @".*Prog Flash Data.*Succeed.*";
                         bool isOk = ActionIsDone(pattern, 10); // 判断动作是否完成，如果反复调用ReadLog()返回的字符串的长度大于2或时间达到4秒则表示完成
                         break;

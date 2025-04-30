@@ -40,7 +40,7 @@
             <Button Grid.Column="0" HorizontalAlignment="Left" Margin="10,0,0,0" Content="select chip" Height="30" Width="70" Click="SelectChip_Click"/>
             <StackPanel Grid.Column="1" Orientation="Horizontal">
                 <TextBox x:Name="chip" Text="15" Height="30" Margin="5,0,0,0" HorizontalAlignment="Left" Width="200"/>
-                <TextBlock Text="14:6911/15:9611" Width="100" VerticalAlignment="Center"></TextBlock>
+                <TextBlock Text="17:6911/9:9611" Width="100" VerticalAlignment="Center"></TextBlock>
             </StackPanel>
 
             <Button Grid.Column="2" Width="70" Height="30" HorizontalAlignment="Right" Margin="10,0,0,0" Content="CkeckLog" Click="GetLog_Click"/>

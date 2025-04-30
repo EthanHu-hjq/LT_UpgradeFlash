@@ -1,0 +1,26 @@
+<ChipTypes>
+<ChipType Selected="0" ProjId="5637" ChipName="LT6211(/B/C)/LT6911(/B/C)" LastProgDir="C:\Users\yjding\Desktop" LastKeyDir="C:\Users\yjding\Desktop" I2CFrequence="1"/>
+<ChipType Selected="0" ProjId="5637" ChipName="LT7211(/B/D)/LT7911(/B/D)" LastProgDir="C:\Users\yjding\Desktop" LastKeyDir="C:\Users\yjding\Desktop" I2CFrequence="1"/>
+<ChipType Selected="0" ProjId="5639" ChipName="LT8711(EH-C/UX)/LT8712EX(C/I)" LastProgDir="C:\Users\plu.PC2021061010\Desktop" LastKeyDir="C:\Users\yjding\Desktop" I2CFrequence="1"/>
+<ChipType Selected="0" ProjId="5641" ChipName="LT8400C/LT84101(/D/X)" LastProgDir="C:\Users\yjding\Desktop" LastKeyDir="C:\Users\yjding\Desktop" I2CFrequence="1"/>
+<ChipType Selected="0" ProjId="5641" ChipName="LT87101(/C/CD/DC)/LT86101(CH/HC/X)" LastProgDir="C:\Users\yjding\Desktop" LastKeyDir="C:\Users\yjding\Desktop" I2CFrequence="1"/>
+<ChipType Selected="0" ProjId="5891" ChipName="LT8711(H/HE/V)/LT8712X" LastProgDir="C:\Users\plu.PC2021061010\Desktop" LastKeyDir="C:\Users\yjding\Desktop" I2CFrequence="1"/>
+<ChipType Selected="0" ProjId="5892" ChipName="LT8311SX" LastProgDir="C:\Users\yjding\Desktop" LastKeyDir="C:\Users\yjding\Desktop" I2CFrequence="1"/>
+<ChipType Selected="0" ProjId="1508480" ChipName="LT6211UX(/C)/LT6911UX(/B/C)/LT86121TX(/E)" LastProgDir="C:\Users\yjding\Desktop" LastKeyDir="C:\Users\yjding\Desktop" I2CFrequence="1"/>
+<ChipType Selected="1" ProjId="1508496" ChipName="LT2611UX(/C)/LT9611UX(/C)/LT86121RX(/E)" LastProgDir="C:\Users\yjding\Desktop" LastKeyDir="C:\Users\yjding\Desktop" I2CFrequence="1"/>
+<ChipType Selected="0" ProjId="6146" ChipName="LT6711(A/B)/LT9711" LastProgDir="C:\Users\yjding\Desktop" LastKeyDir="C:\Users\yjding\Desktop" I2CFrequence="1" ImageDir="C:\Users\yjding\Desktop" VolumeDir="C:\Users\yjding\Desktop" LuminanceDir="C:\Users\yjding\Desktop" PowerDir="C:\Users\yjding\Desktop"/>
+<ChipType Selected="0" ProjId="6147" ChipName="LT8668SXT" LastProgDir="C:\Users\yjding\Desktop" LastKeyDir="C:\Users\yjding\Desktop" I2CFrequence="1"/>
+<ChipType Selected="0" ProjId="6401" ChipName="LT6(2/7/9)11GX/LT7(2/9)11UX" LastProgDir="C:\Users\yjding\Desktop" LastKeyDir="C:\Users\yjding\Desktop" I2CFrequence="1" ColorDir="C:\Users\yjding\Desktop" CmdDir="C:\Users\yjding\Desktop" FontDir="C:\Users\yjding\Desktop"/>
+<ChipType Selected="0" ProjId="6401" ChipName="LT8668SX(/C/-D)/LT8711GX/LT86121EX" LastProgDir="C:\Users\yjding\Desktop" LastKeyDir="C:\Users\yjding\Desktop" I2CFrequence="1" ColorDir="C:\Users\yjding\Desktop" CmdDir="C:\Users\yjding\Desktop" FontDir="C:\Users\yjding\Desktop"/>
+<ChipType Selected="0" ProjId="6403" ChipName="LT8(7/9)121" LastProgDir="C:\Users\yjding\Desktop" LastKeyDir="C:\Users\yjding\Desktop" I2CFrequence="1"/>
+<ChipType Selected="0" ProjId="8195" ChipName="LT8642UXE/LT86102UXS/LT86(2/4)04UX" LastProgDir="C:\Users\yjding\Desktop" LastKeyDir="C:\Users\yjding\Desktop" I2CFrequence="1" ColorDir="C:\Users\yjding\Desktop" CmdDir="C:\Users\yjding\Desktop" FontDir="C:\Users\yjding\Desktop"/>
+<ChipType Selected="0" ProjId="8449" ChipName="LT8711UX(C/D/E1/E2)" LastProgDir="C:\Users\yjding\Desktop" LastKeyDir="C:\Users\yjding\Desktop" I2CFrequence="1" ColorDir="C:\Users\yjding\Desktop" CmdDir="C:\Users\yjding\Desktop" FontDir="C:\Users\yjding\Desktop"/>
+<ChipType Selected="0" ProjId="8450" ChipName="LT6911UXE" LastProgDir="D:\Project\Tymphany\LT_UpgradeFlash\HDMI Board\LT FW  Files\LT6911 UXE" LastKeyDir="C:\Users\plu\Desktop" I2CFrequence="1" ColorDir="C:\Users\yjding\Desktop" CmdDir="C:\Users\yjding\Desktop" FontDir="C:\Users\yjding\Desktop"/>
+<ChipType Selected="0" ProjId="8708" ChipName="LT(67/87/69/79)11GXE|LT6911GXD" LastProgDir="C:\Users\plu\Desktop" LastKeyDir="C:\Users\yjding\Desktop" I2CFrequence="1" ColorDir="C:\Users\yjding\Desktop" CmdDir="C:\Users\yjding\Desktop" FontDir="C:\Users\yjding\Desktop"/>
+<ChipType Selected="0" ProjId="8708" ChipName="LT86121GXE|LT7911UXE" LastProgDir="C:\Users\yjding\Desktop" LastKeyDir="C:\Users\yjding\Desktop" I2CFrequence="1" ColorDir="C:\Users\yjding\Desktop" CmdDir="C:\Users\yjding\Desktop" FontDir="C:\Users\yjding\Desktop"/>
+<ChipType Selected="0" ProjId="8709" ChipName="LT86101UXS" LastProgDir="C:\Users\yjding\Desktop" LastKeyDir="C:\Users\yjding\Desktop" I2CFrequence="1" ColorDir="C:\Users\yjding\Desktop" CmdDir="C:\Users\yjding\Desktop" FontDir="C:\Users\yjding\Desktop"/>
+<ChipType Selected="0" ProjId="8711" ChipName="LT871(2/3)SX" LastProgDir="C:\Users\plu\Desktop" LastKeyDir="C:\Users\yjding\Desktop" I2CFrequence="1" ColorDir="C:\Users\yjding\Desktop" CmdDir="C:\Users\yjding\Desktop" FontDir="C:\Users\yjding\Desktop"/>
+<ChipType Selected="0" ProjId="6149" ChipName="LT86(1/4)2UX_U3/LT86(41/102)UXE_U3" LastProgDir="C:\Users\yjding\Desktop" LastKeyDir="C:\Users\yjding\Desktop" I2CFrequence="1"/>
+<ChipType Selected="0" ProjId="8962" ChipName="LT86(1/4)2UX_U(4/5)/LT86(41/102)UXE_U(4/5)" LastProgDir="C:\Users\plu\Desktop\newver" LastKeyDir="C:\Users\plu\Desktop" I2CFrequence="1" ColorDir="C:\Users\plu\Desktop" CmdDir="C:\Users\plu\Desktop" FontDir="C:\Users\plu\Desktop"/>
+<ChipType Selected="0" ProjId="8966" ChipName="LT2611UX(D/E)/LT9611UXD" LastProgDir="C:\Users\plu.PC2021061010\Desktop" LastKeyDir="D:" I2CFrequence="1" ColorDir="" CmdDir="" FontDir=""/>
+</ChipTypes>

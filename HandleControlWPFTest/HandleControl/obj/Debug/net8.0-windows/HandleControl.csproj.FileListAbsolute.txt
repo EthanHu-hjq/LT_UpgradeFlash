@@ -60,3 +60,9 @@ D:\SoftWare\Microsoft Visual Studio\Project\Tymphany\LT_UpgradeFlash\HandleContr
 D:\SoftWare\Microsoft Visual Studio\Project\Tymphany\LT_UpgradeFlash\HandleControlWPFTest\HandleControl\obj\Debug\net8.0-windows\HandleControl.pdb
 D:\SoftWare\Microsoft Visual Studio\Project\Tymphany\LT_UpgradeFlash\HandleControlWPFTest\HandleControl\obj\Debug\net8.0-windows\HandleControl.genruntimeconfig.cache
 D:\SoftWare\Microsoft Visual Studio\Project\Tymphany\LT_UpgradeFlash\HandleControlWPFTest\HandleControl\obj\Debug\net8.0-windows\ref\HandleControl.dll
+D:\SoftWare\Microsoft Visual Studio\Project\Tymphany\LT_UpgradeFlash\HandleControlWPFTest\HandleControl\bin\Debug\net8.0-windows\WindowsInput.dll
+D:\SoftWare\Microsoft Visual Studio\Project\Tymphany\LT_UpgradeFlash\HandleControlWPFTest\HandleControl\obj\Debug\net8.0-windows\HandleControl.csproj.AssemblyReference.cache
+D:\SoftWare\Microsoft Visual Studio\Project\Tymphany\LT_UpgradeFlash\HandleControlWPFTest\HandleControl\obj\Debug\net8.0-windows\HandleCo.523FD00A.Up2Date
+D:\Project\Tymphany\LT_UpgradeFlash\HandleControlWPFTest\HandleControl\bin\Debug\net8.0-windows\WindowsInput.dll
+D:\Project\Tymphany\LT_UpgradeFlash\HandleControlWPFTest\HandleControl\obj\Debug\net8.0-windows\HandleControl.csproj.AssemblyReference.cache
+D:\Project\Tymphany\LT_UpgradeFlash\HandleControlWPFTest\HandleControl\obj\Debug\net8.0-windows\HandleCo.523FD00A.Up2Date
