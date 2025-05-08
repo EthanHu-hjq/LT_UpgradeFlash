@@ -1,0 +1,130 @@
+﻿<Window x:Class="_5450_Flash.Views.BurnWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:_5450_Flash.Views"
+        mc:Ignorable="d"
+        Title="BurnWindow" Height="450" Width="1200">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="40"/>
+            <RowDefinition Height="60"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="0" Margin="5">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <Button Grid.Column="0" Content="OpenExe" Width="70" Margin="10,2,5,2" 
+            VerticalAlignment="Center" Command="{Binding BurnModel.OpenCmd}"/>
+
+            <TextBlock Grid.Column="1" Text="{Binding BurnModel.ExePath}" 
+              Margin="5,0" VerticalAlignment="Center" FontSize="10" 
+              TextWrapping="Wrap" TextTrimming="CharacterEllipsis"/>
+
+            <Button Grid.Column="2" Content="Browse" Width="70" Margin="5,2"
+           VerticalAlignment="Center" Command="{Binding BurnModel.BrowseCmd}"/>
+
+            <Button Grid.Column="3" Content="CloseExe" Width="70" Margin="5,2"
+           VerticalAlignment="Center" Command="{Binding BurnModel.CloseCmd}"/>
+        </Grid>
+
+        <Grid Grid.Row="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <!-- 第一行控件 -->
+            <Grid Grid.Row="0" Margin="10,2">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="260"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <ComboBox Grid.Column="0" ItemsSource="{Binding Items}"
+                 DisplayMemberPath="DisplayName" SelectedItem="{Binding SelectedItem}"
+                 Margin="5" VerticalAlignment="Center"/>
+
+                <TextBlock Grid.Column="1" Text="{Binding SelectedItem.Value}" 
+                  Margin="5,0" VerticalAlignment="Center"/>
+
+                <Label Grid.Column="2" Content="Dev1 Slave Addr 0x" 
+              VerticalAlignment="Center" Padding="0"/>
+
+                <TextBox Grid.Column="3" Text="{Binding BurnModel.Dev1Addr}"
+                Width="35" Height="25" Margin="5,0" VerticalAlignment="Center"/>
+
+                <Button Grid.Column="4" Content="Erase" Width="100" Margin="5,0"
+               VerticalAlignment="Center" Command="{Binding BurnModel.EraseCmd}"/>
+
+                <Button Grid.Column="5" Content="Read Version" Width="100" Margin="5,0"
+               VerticalAlignment="Center" Command="{Binding BurnModel.ReadVerCmd}" HorizontalAlignment="Right"/>
+            </Grid>
+
+            <!-- 第二行控件 -->
+            <Grid Grid.Row="1" Margin="10,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Grid.Column="0" Text="{Binding BurnFilePath}" 
+                  Margin="5,0" VerticalAlignment="Center" 
+                  TextTrimming="CharacterEllipsis"/>
+
+                <Button Grid.Column="1" Content="FW1 Path ..." Width="100" Margin="5,0"
+               VerticalAlignment="Center" Command="{Binding BurnModel.LoadBurnFileCmd}"/>
+
+                <Button Grid.Column="2" Content="Update" Width="100" Margin="5,0"
+               VerticalAlignment="Center" Command="{Binding BurnModel.UpdateCmd}"/>
+            </Grid>
+        </Grid>
+
+        <!--第三行-->
+        <Grid Grid.Row="2" Margin="5">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="395*"/>
+                <ColumnDefinition Width="134*"/>
+                <ColumnDefinition Width="261*"/>
+            </Grid.ColumnDefinitions>
+
+            <Grid Grid.Column="0" Margin="5,5,5,5">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+
+                <StackPanel Grid.Row="0" Orientation="Horizontal" 
+                   VerticalAlignment="Center" Margin="5,0">
+                    <Label Content="主窗口Handle" VerticalAlignment="Center"/>
+                    <TextBlock Text="{Binding BurnModel.MainHandleStr}" 
+                      Margin="5,0" VerticalAlignment="Center"/>
+                </StackPanel>
+
+                <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto"
+                              HorizontalScrollBarVisibility="Auto"
+                     Margin="5" Padding="3">
+                    <ItemsControl ItemsSource="{Binding BurnModel.ControlStrs}"
+                         VerticalContentAlignment="Center">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding}" Margin="2,0"/>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+            </Grid>
+        </Grid>
+    </Grid>
+</Window>

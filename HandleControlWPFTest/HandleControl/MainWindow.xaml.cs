@@ -111,7 +111,7 @@ namespace HandleControl
         public void ClickButton(IntPtr hwnd)
         {
             //SendMessage(hwnd, BM_CLICK, IntPtr.Zero, IntPtr.Zero); // 阻塞模拟按钮点击
-            PostMessage(hwnd, BM_CLICK, IntPtr.Zero, IntPtr.Zero);//不阻塞模拟按钮点击
+            bool isOk = PostMessage(hwnd, BM_CLICK, IntPtr.Zero, IntPtr.Zero);//不阻塞模拟按钮点击
         }
         #endregion
 

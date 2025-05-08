@@ -54,9 +54,9 @@ namespace LT_UpgradeFlash_dll
 
         #region 变量声明
         public delegate bool EnumChildProc(IntPtr hwnd, int lParam);//定义枚举子句柄委托
-        List<IntPtr> DialogControlHandles = new List<IntPtr>();//文件对话框控件handle集合
-        IntPtr exeHandle = IntPtr.Zero; // 主窗口句柄
-        List<IntPtr> exeControlHandles = new List<IntPtr>();//exe控件句柄集合
+        public static List<IntPtr> DialogControlHandles = new List<IntPtr>();//文件对话框控件handle集合
+        public static IntPtr exeHandle = IntPtr.Zero; // 主窗口句柄
+        public static List<IntPtr> exeControlHandles = new List<IntPtr>();//exe控件句柄集合
         #endregion
 
         #region 定义消息常量
@@ -91,11 +91,10 @@ namespace LT_UpgradeFlash_dll
             StringBuilder sb  = new StringBuilder(256);
             int lenth = 0;
 
-            DateTime start = DateTime.Now;
-            while((DateTime.Now - start).TotalSeconds <1.5)
+            for(int count = 0;count < 2000;count+=100)
             {
-                dialogHandle = FindWindow("#32770",dialogTitle);
-                title  = GetWindowTitle(dialogHandle);
+                dialogHandle = FindWindow("#32770", dialogTitle);
+                title = GetWindowTitle(dialogHandle);
                 if ((dialogHandle != IntPtr.Zero) && (title == dialogTitle))
                 {
                     SetForegroundWindow(dialogHandle);
@@ -462,6 +461,7 @@ namespace LT_UpgradeFlash_dll
             process.Start();
             #endregion
 
+            Thread.Sleep(2000);
             //判断是否弹出Error提示框，如果弹出则点击确定按钮关闭对话框
             CloseDialog("Error", "确定");
 
@@ -474,7 +474,6 @@ namespace LT_UpgradeFlash_dll
                 Thread.Sleep(1000);
                 exeHandle = process.MainWindowHandle;
             }
-
 
             //获取exe窗口所有控件句柄
             exeControlHandles.Clear();
@@ -491,11 +490,11 @@ namespace LT_UpgradeFlash_dll
         #endregion
 
         #region 控制显示exe窗口
-        public void ShowExeWindow(bool isShow)
+        public void ShowExeWindow(string isShow)
         {
             if (exeHandle != IntPtr.Zero)
             {
-                if (isShow)
+                if (isShow == "True")
                 {
                     SetWindowVisibility(exeHandle, true);
                 }

@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.13.35931.197 d17.13
+VisualStudioVersion = 17.13.35931.197
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LT_UpgradeFlash_dll", "LT_UpgradeFlash_dll\LT_UpgradeFlash_dll.csproj", "{CB431E51-005F-49CC-ADDD-6253DAEC0A6A}"
 EndProject

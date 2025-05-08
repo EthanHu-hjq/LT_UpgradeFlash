@@ -1,0 +1,70 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "D:\\Project\\Tymphany\\HDMI Board_2025-04-15\\HDMI Board\\5450\\Program\\5450_Flash\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{3CAB1368-2DA0-404C-94D6-79AFE47A4355}|5450_Flash\\5450_Flash.csproj|d:\\project\\tymphany\\hdmi board_2025-04-15\\hdmi board\\5450\\program\\5450_flash\\5450_flash\\models\\burnmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{3CAB1368-2DA0-404C-94D6-79AFE47A4355}|5450_Flash\\5450_Flash.csproj|solutionrelative:5450_flash\\models\\burnmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{3CAB1368-2DA0-404C-94D6-79AFE47A4355}|5450_Flash\\5450_Flash.csproj|d:\\project\\tymphany\\hdmi board_2025-04-15\\hdmi board\\5450\\program\\5450_flash\\5450_flash\\viewmodels\\burnviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{3CAB1368-2DA0-404C-94D6-79AFE47A4355}|5450_Flash\\5450_Flash.csproj|solutionrelative:5450_flash\\viewmodels\\burnviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{3CAB1368-2DA0-404C-94D6-79AFE47A4355}|5450_Flash\\5450_Flash.csproj|d:\\project\\tymphany\\hdmi board_2025-04-15\\hdmi board\\5450\\program\\5450_flash\\5450_flash\\views\\burnwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "RelativeMoniker": "D:0:0:{3CAB1368-2DA0-404C-94D6-79AFE47A4355}|5450_Flash\\5450_Flash.csproj|solutionrelative:5450_flash\\views\\burnwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 2,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "BurnWindow.xaml",
+              "DocumentMoniker": "D:\\Project\\Tymphany\\HDMI Board_2025-04-15\\HDMI Board\\5450\\Program\\5450_Flash\\5450_Flash\\Views\\BurnWindow.xaml",
+              "RelativeDocumentMoniker": "5450_Flash\\Views\\BurnWindow.xaml",
+              "ToolTip": "D:\\Project\\Tymphany\\HDMI Board_2025-04-15\\HDMI Board\\5450\\Program\\5450_Flash\\5450_Flash\\Views\\BurnWindow.xaml",
+              "RelativeToolTip": "5450_Flash\\Views\\BurnWindow.xaml",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
+              "WhenOpened": "2025-05-07T00:23:36.943Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "BurnViewModel.cs",
+              "DocumentMoniker": "D:\\Project\\Tymphany\\HDMI Board_2025-04-15\\HDMI Board\\5450\\Program\\5450_Flash\\5450_Flash\\ViewModels\\BurnViewModel.cs",
+              "RelativeDocumentMoniker": "5450_Flash\\ViewModels\\BurnViewModel.cs",
+              "ToolTip": "D:\\Project\\Tymphany\\HDMI Board_2025-04-15\\HDMI Board\\5450\\Program\\5450_Flash\\5450_Flash\\ViewModels\\BurnViewModel.cs",
+              "RelativeToolTip": "5450_Flash\\ViewModels\\BurnViewModel.cs",
+              "ViewState": "AgIAAAMAAAAAAAAAAAAhwD0AAAAMAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-05-06T07:23:25.016Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "BurnModel.cs",
+              "DocumentMoniker": "D:\\Project\\Tymphany\\HDMI Board_2025-04-15\\HDMI Board\\5450\\Program\\5450_Flash\\5450_Flash\\Models\\BurnModel.cs",
+              "RelativeDocumentMoniker": "5450_Flash\\Models\\BurnModel.cs",
+              "ToolTip": "D:\\Project\\Tymphany\\HDMI Board_2025-04-15\\HDMI Board\\5450\\Program\\5450_Flash\\5450_Flash\\Models\\BurnModel.cs",
+              "RelativeToolTip": "5450_Flash\\Models\\BurnModel.cs",
+              "ViewState": "AgIAAMMAAAAAAAAAAAD4vx4BAAAqAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-05-06T06:54:29.336Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

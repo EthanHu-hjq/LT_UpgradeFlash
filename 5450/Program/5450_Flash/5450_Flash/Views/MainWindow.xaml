@@ -1,0 +1,30 @@
+﻿<Window x:Class="_5450_Flash.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:_5450_Flash"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="800">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <Label Content="第一个数字:" Grid.Row="0" Grid.Column="0"/>
+        <TextBox Text="{Binding calModel.firstNum, UpdateSourceTrigger=PropertyChanged}" Grid.Row="0" Grid.Column="1"/>
+        <Label Content="第二个数字:" Grid.Row="1" Grid.Column="0"/>
+        <TextBox Text="{Binding calModel.secondNum, UpdateSourceTrigger=PropertyChanged}" Grid.Row="1" Grid.Column="1"/>
+        <Button Content="加法" Command="{Binding AddCommand}" Grid.Row="2" Grid.Column="0"/>
+        <Button Content="减法" Command="{Binding SubCommand}" Grid.Row="2" Grid.Column="1"/>
+        <Label Content="结果:" Grid.Row="3" Grid.Column="0"/>
+        <TextBlock Text="{Binding calModel.Result}" Grid.Row="3" Grid.Column="1"/>
+    </Grid>
+</Window>

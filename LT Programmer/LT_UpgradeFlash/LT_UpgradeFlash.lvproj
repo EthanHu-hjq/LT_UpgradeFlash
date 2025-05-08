@@ -14,7 +14,8 @@
 		<Item Name="Global.vi" Type="VI" URL="../Global.vi"/>
 		<Item Name="LT_UpgradeFlash.lvclass" Type="LVClass" URL="../LT_UpgradeFlash.lvclass"/>
 		<Item Name="Dependencies" Type="Dependencies">
-			<Item Name="LT_UpgradeFlash_dll.dll" Type="Document" URL="../../New_Lib/LT_UpgradeFlash_dll/LT_UpgradeFlash_dll/bin/Debug/LT_UpgradeFlash_dll.dll"/>
+			<Item Name="LT_UpgradeFlash_dll.dll" Type="Document" URL="../LT_UpgradeFlash_dll.dll"/>
+			<Item Name="null" Type="Document"/>
 		</Item>
 		<Item Name="Build Specifications" Type="Build"/>
 	</Item>
