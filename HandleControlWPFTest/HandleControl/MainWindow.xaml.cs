@@ -273,7 +273,7 @@ namespace HandleControl
             process.StartInfo.UseShellExecute = true;
             process.Start();
             #endregion
-            Thread.Sleep(1000);
+            Thread.Sleep(2000);
             CloseDialog("Error", "确定"); // 关闭错误对话框
 
             Thread.Sleep(3000);
@@ -590,12 +590,13 @@ namespace HandleControl
                         comboBoxHandle = handle; // 获取ComboBox控件的句柄
                                                  // 设置选中项（索引从0开始）
                         PostMessage(comboBoxHandle, CB_SETCURSEL, (IntPtr)selectItem, IntPtr.Zero);
-
+                        Thread.Sleep(1000);
+                        CloseDialog("Error", "确定");
                         // 触发值改变事件
                         int ctrlID = GetDlgCtrlID(comboBoxHandle);  // 需补充此API声明 
                         IntPtr wParam = (IntPtr)((CBN_SELCHANGE << 16) | (ushort)ctrlID);
                         IntPtr parentHandle = GetParent(comboBoxHandle);
-                        SendMessage(parentHandle, WM_COMMAND, wParam, comboBoxHandle);
+                        PostMessage(parentHandle, WM_COMMAND, wParam, comboBoxHandle);
                         CloseDialog("Error", "确定");
                         break;
                     }

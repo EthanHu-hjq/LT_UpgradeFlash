@@ -14,11 +14,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\Project\\Tymphany\\HDMI Board_2025-04-15\\HDMI Board\\5450\\Program\\5450_Flash\\5450_Flash\\5450_Flash.csproj",
+      "projectUniqueName": "D:\\Project\\Tymphany\\LT_UpgradeFlash\\5450\\Program\\5450_Flash\\5450_Flash\\5450_Flash.csproj",
       "projectName": "5450_Flash",
-      "projectPath": "D:\\Project\\Tymphany\\HDMI Board_2025-04-15\\HDMI Board\\5450\\Program\\5450_Flash\\5450_Flash\\5450_Flash.csproj",
+      "projectPath": "D:\\Project\\Tymphany\\LT_UpgradeFlash\\5450\\Program\\5450_Flash\\5450_Flash\\5450_Flash.csproj",
       "packagesPath": "C:\\Users\\ethan.hu\\.nuget\\packages\\",
-      "outputPath": "D:\\Project\\Tymphany\\HDMI Board_2025-04-15\\HDMI Board\\5450\\Program\\5450_Flash\\5450_Flash\\obj\\",
+      "outputPath": "D:\\Project\\Tymphany\\LT_UpgradeFlash\\5450\\Program\\5450_Flash\\5450_Flash\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

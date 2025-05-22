@@ -6,6 +6,7 @@
         xmlns:local="clr-namespace:_5450_Flash.Views"
         mc:Ignorable="d"
         Title="BurnWindow" Height="450" Width="1200">
+    
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="40"/>
@@ -48,27 +49,38 @@
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
 
-                <ComboBox Grid.Column="0" ItemsSource="{Binding Items}"
-                 DisplayMemberPath="DisplayName" SelectedItem="{Binding SelectedItem}"
-                 Margin="5" VerticalAlignment="Center"/>
+                <ComboBox Grid.Column="0" ItemsSource="{Binding BurnModel.Items}"
+                          SelectedItem="{Binding BurnModel.SelectedItem,Mode=TwoWay}"
+                          DisplayMemberPath="Name" SelectedValuePath="Id"
+                          Margin="5" VerticalAlignment="Center"/>
 
                 <TextBlock Grid.Column="1" Text="{Binding SelectedItem.Value}" 
                   Margin="5,0" VerticalAlignment="Center"/>
+                <Button Grid.Column="2" Content="设置选中BUS Type" Command="{Binding BurnModel.SetBusTypeCmd}"
+                        Margin="5,0"  Width="70"/>
 
-                <Label Grid.Column="2" Content="Dev1 Slave Addr 0x" 
+                <Label Grid.Column="3" Content="Dev1 Slave Addr 0x" 
               VerticalAlignment="Center" Padding="0"/>
 
-                <TextBox Grid.Column="3" Text="{Binding BurnModel.Dev1Addr}"
+                <TextBox Grid.Column="4" Text="{Binding BurnModel.Dev1Addr}"
                 Width="35" Height="25" Margin="5,0" VerticalAlignment="Center"/>
 
-                <Button Grid.Column="4" Content="Erase" Width="100" Margin="5,0"
+                <Button Grid.Column="5" Content="Erase" Width="100" Margin="5,0"
                VerticalAlignment="Center" Command="{Binding BurnModel.EraseCmd}"/>
+                <Button Grid.Column="6" Content="SetDev1" Width="100" Margin="5,0"
+VerticalAlignment="Center" Command="{Binding BurnModel.SetDev1}"/>
 
-                <Button Grid.Column="5" Content="Read Version" Width="100" Margin="5,0"
+                <Button Grid.Column="7" Content="Read Version" Width="100" Margin="5,0"
                VerticalAlignment="Center" Command="{Binding BurnModel.ReadVerCmd}" HorizontalAlignment="Right"/>
+
+                <Button Grid.Column="8" Content="Show exe" Width="100" Margin="5,0"
+                        VerticalAlignment="Center" Command="{Binding BurnModel.ShowExeCmd}" HorizontalAlignment="Right"/>
             </Grid>
 
             <!-- 第二行控件 -->

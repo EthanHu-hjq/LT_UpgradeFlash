@@ -82,16 +82,15 @@ namespace LT_UpgradeFlash_dll
         /// </summary>
         /// <param name="dialogTitle">对话框标题</param>
         /// <param name="captionName"></param>
-        private bool CloseDialog(string dialogTitle,string captionName)
+        private bool CloseDialog(string dialogTitle,string captionName,int timeout = 2000)
         {
             //获取对话框句柄
             IntPtr dialogHandle = new IntPtr();
             dialogHandle = IntPtr.Zero;
             string title = string.Empty;
             StringBuilder sb  = new StringBuilder(256);
-            int lenth = 0;
 
-            for(int count = 0;count < 2000;count+=100)
+            for(int count = 0;count < timeout;count+=100)
             {
                 dialogHandle = FindWindow("#32770", dialogTitle);
                 title = GetWindowTitle(dialogHandle);
@@ -134,7 +133,6 @@ namespace LT_UpgradeFlash_dll
             dialogHandle = IntPtr.Zero;
             string title = string.Empty;
             StringBuilder sb = new StringBuilder(256);
-            int lenth = 0;
 
             for (int count = 0; count < 2000; count += 100)
             {
@@ -287,19 +285,16 @@ namespace LT_UpgradeFlash_dll
         {
             //判断动作是否完成，如果反复调用ReadLog()返回的字符串的长度大于2或时间达到timeOut则表示完成
             int count = 0;
-            bool isTimeOut = false;
             while (true)
             {
                 logStr = ReadLog();
                 if (Regex.IsMatch(logStr, pattern) || count >= timeOut)
                 {
-                    isTimeOut = true;
                     return Regex.IsMatch(logStr, pattern);
                 }
-                Thread.Sleep(100);
+                if(CloseDialog("Error", "确定",100)) return false;//判断是否弹出Error提示框，如果弹出则点击确定按钮关闭对话框
                 count += 100;
             }
-            return false;
         }
 
         /// <summary>
@@ -440,7 +435,6 @@ namespace LT_UpgradeFlash_dll
                     if (captionName.ToString() == caption)
                     {
                         return handle;
-                        break;
                     }
                 }
             }
@@ -463,7 +457,7 @@ namespace LT_UpgradeFlash_dll
 
             Thread.Sleep(2000);
             //判断是否弹出Error提示框，如果弹出则点击确定按钮关闭对话框
-            CloseDialog("Error", "确定");
+            CloseDialog("Error", "确定", 2000);
 
             process.WaitForInputIdle(waitForOpenDone);//等待exe进程进入空闲状态
             //获取exe窗口句柄
@@ -474,7 +468,6 @@ namespace LT_UpgradeFlash_dll
                 Thread.Sleep(1000);
                 exeHandle = process.MainWindowHandle;
             }
-
             //获取exe窗口所有控件句柄
             exeControlHandles.Clear();
             EnumChildWindows(exeHandle, EnumChildCallback, (IntPtr)0);
@@ -528,7 +521,6 @@ namespace LT_UpgradeFlash_dll
         {
             ClearLog();//清除Log记录
             ClickButton(1002);//点击Read按钮
-            CloseDialog("Error", "确定");//判断是否弹出Error提示框，如果弹出则点击确定按钮关闭对话框
 
             //判断Read按钮是否被点击成功
             string pattern = @".*Read FLASH Data.*Done.*";
@@ -541,22 +533,14 @@ namespace LT_UpgradeFlash_dll
         public bool Erase(out string resultString, int timeOut)
         {
             ClearLog();//清除Log记录
-
             ClickButton(GetHandle(1021, "Erase")); //点击Erase按钮
-            
-            for(int i=0;i<30;i++)
-            {
-                if (CloseDialog("Info","确定")) break;
-            }
-            for(int i = 0; i < 3; i++)
-            {
-                if (CloseDialog("Error", "确定")) break;
-            }
+            CloseDialog("Info", "确定", timeOut/2); //判断是否弹出Info提示框，如果弹出则点击确定按钮关闭对话框 
+            //CloseDialog("Error", "确定",2000);//判断是否弹出Error提示框，如果弹出则点击确定按钮关闭对话框
 
             //判断Erase按钮是否被点击成功
             string pattern = @".*Done.*";
             resultString = ReadLog();//读取日志
-            return ActionIsDone(out resultString, pattern, timeOut);//判断Erase按钮是否被点击成功
+            return ActionIsDone(out resultString, pattern, timeOut/2);//判断Erase按钮是否被点击成功
         }
         #endregion
 
@@ -591,7 +575,7 @@ namespace LT_UpgradeFlash_dll
                         IntPtr wParam = (IntPtr)((CBN_SELCHANGE << 16) | (ushort)ctrlID);
                         IntPtr parentHandle = GetParent(comboBoxHandle);
                         PostMessage(parentHandle, WM_COMMAND, wParam, comboBoxHandle);
-                        CloseDialog("Error", "确定");
+                        CloseDialog("Error", "确定",2000);
                         break;
                     }
                 }
@@ -646,8 +630,9 @@ namespace LT_UpgradeFlash_dll
                 resultStr = "";
                 SetProgFile(progFilePath);//设置烧录文件路径
 
-                CloseDialog("Error", "确定");//判断是否弹出Error提示框，如果弹出则点击确定按钮关闭对话框
-                if(chipName == "LT6911")
+                //CloseDialog("Error", "确定");//判断是否弹出Error提示框，如果弹出则点击确定按钮关闭对话框
+                //烧录LT6911时会弹出Info提示框
+                if (chipName == "LT6911")
                 {
                     CloseDialog("Waring", "确定");//判断是否弹出Info提示框，如果弹出则点击确定按钮关闭对话框
                 }

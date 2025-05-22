@@ -9,34 +9,7 @@ namespace _5450_Flash.Models
 {
     public class ItemModel:NotifyBase
     {
-		private string _displayName;
-
-		public string DisplayName
-		{
-			get => _displayName;
-			set
-			{
-				if (_displayName != value)
-				{
-					_displayName = value;
-					RaisePropertyChanged();
-				}
-			}
-		}
-
-		private int _value;
-
-		public int Value
-		{
-			get => _value;
-			set
-			{
-				if(_value != value)
-                {
-                    _value = value;
-                    RaisePropertyChanged();
-                }
-            }
-		}
-	}
+        public int Id { get; set; }
+        public string Name { get; set; }
+    }
 }

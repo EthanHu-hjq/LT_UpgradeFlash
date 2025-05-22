@@ -6,8 +6,8 @@
 <ChipType Selected="0" ProjId="5641" ChipName="LT87101(/C/CD/DC)/LT86101(CH/HC/X)" LastProgDir="C:\Users\yjding\Desktop" LastKeyDir="C:\Users\yjding\Desktop" I2CFrequence="1"/>
 <ChipType Selected="0" ProjId="5891" ChipName="LT8711(H/HE/V)/LT8712X" LastProgDir="C:\Users\plu.PC2021061010\Desktop" LastKeyDir="C:\Users\yjding\Desktop" I2CFrequence="1"/>
 <ChipType Selected="0" ProjId="5892" ChipName="LT8311SX" LastProgDir="C:\Users\yjding\Desktop" LastKeyDir="C:\Users\yjding\Desktop" I2CFrequence="1"/>
-<ChipType Selected="0" ProjId="1508480" ChipName="LT6211UX(/C)/LT6911UX(/B/C)/LT86121TX(/E)" LastProgDir="C:\Users\yjding\Desktop" LastKeyDir="C:\Users\yjding\Desktop" I2CFrequence="1"/>
-<ChipType Selected="0" ProjId="1508496" ChipName="LT2611UX(/C)/LT9611UX(/C)/LT86121RX(/E)" LastProgDir="C:\Users\yjding\Desktop" LastKeyDir="C:\Users\yjding\Desktop" I2CFrequence="1"/>
+<ChipType Selected="0" ProjId="1508480" ChipName="LT6211UX(/C)/LT6911UX(/B/C)/LT86121TX(/E)" LastProgDir="D:\Project\Tymphany\LT_UpgradeFlash\HDMI Board\LT FW  Files\LT6911 UXE" LastKeyDir="C:\Users\yjding\Desktop" I2CFrequence="1"/>
+<ChipType Selected="0" ProjId="1508496" ChipName="LT2611UX(/C)/LT9611UX(/C)/LT86121RX(/E)" LastProgDir="D:\Project\Tymphany\LT_UpgradeFlash\HDMI Board\LT Upgrade Flash" LastKeyDir="C:\Users\yjding\Desktop" I2CFrequence="1"/>
 <ChipType Selected="0" ProjId="6146" ChipName="LT6711(A/B)/LT9711" LastProgDir="C:\Users\yjding\Desktop" LastKeyDir="C:\Users\yjding\Desktop" I2CFrequence="1" ImageDir="C:\Users\yjding\Desktop" VolumeDir="C:\Users\yjding\Desktop" LuminanceDir="C:\Users\yjding\Desktop" PowerDir="C:\Users\yjding\Desktop"/>
 <ChipType Selected="0" ProjId="6147" ChipName="LT8668SXT" LastProgDir="C:\Users\yjding\Desktop" LastKeyDir="C:\Users\yjding\Desktop" I2CFrequence="1"/>
 <ChipType Selected="0" ProjId="6401" ChipName="LT6(2/7/9)11GX/LT7(2/9)11UX" LastProgDir="C:\Users\yjding\Desktop" LastKeyDir="C:\Users\yjding\Desktop" I2CFrequence="1" ColorDir="C:\Users\yjding\Desktop" CmdDir="C:\Users\yjding\Desktop" FontDir="C:\Users\yjding\Desktop"/>
